@@ -65,3 +65,7 @@ h3{font-variation-settings:'opsz' 32}
 .contact-note h3{font-size:27px}
 h1,h2,h3{text-wrap:balance}
 @media(max-width:760px){.page-intro>p:last-child{font-size:18px}.hero-signature{font-size:10px}.home-hero .eyebrow{max-width:100%;font-size:11px}.contact-grid .button{font-size:14px}.status-label{letter-spacing:.06em}.work-categories{font-size:11px}.identity-panel>p{font-size:11px}}
+
+.footer-contact{display:flex;flex-wrap:wrap;gap:12px 28px;padding-bottom:24px;font-size:16px;line-height:1.6}.footer-contact a,.contact-note a{text-decoration:underline;text-underline-offset:4px;overflow-wrap:anywhere}.footer-contact p{flex-basis:100%;font-size:14px}.footer-contact a{min-height:24px}
+
+.contact-note address,.footer-contact address{font-style:normal;font-size:16px;line-height:1.7;margin-block:16px}.footer-contact address{flex-basis:100%;margin:0}
