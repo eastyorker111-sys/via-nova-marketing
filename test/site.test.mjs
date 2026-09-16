@@ -11,12 +11,17 @@ for (const [key, page] of Object.entries(pages)) {
     assert.ok(html.includes('noindex, nofollow'));
     for (const [,href] of html.matchAll(/(?:href|src)="([^"]+)"/g)) {
       if (href.startsWith('#')) assert.ok(html.includes(`id="${href.slice(1)}"`));
-      else if (href.endsWith('.html')) assert.ok(pages[href.slice(0,-5)], href);
+      else if (href.includes('.html')) {
+        const [file, fragment] = href.split('#');
+        const destination = pages[file.slice(0,-5)];
+        assert.ok(destination, href);
+        if (fragment) assert.ok(destination.content.includes(`id="${fragment}"`), href);
+      }
       else assert.ok(existsSync(`public/${href}`), href);
     }
   });
 }
 test('placeholders disclose limitations', () => {
-  assert.match(pages.work.content, /not client projects/);
+  assert.match(pages.work.content, /No client projects or results/);
   assert.match(pages.contact.content, /does not send or store/);
 });
