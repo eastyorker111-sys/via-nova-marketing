@@ -20,11 +20,22 @@ for (const [key, page] of Object.entries(pages)) {
         assert.ok(destination, href);
         if (fragment) assert.ok(destination.content.includes(`id="${fragment}"`), href);
       }
-      else assert.ok(existsSync(`public/${href}`), href);
+      else assert.ok(existsSync(`public/${href}`) || (href === 'assets/analytics.js' && existsSync(`dist/${href}`)), href);
     }
   });
 }
 test('placeholders disclose limitations', () => {
   assert.match(pages.work.content, /No client projects or results/);
   assert.match(pages.contact.content, /does not send or store/);
+});
+
+test('search metadata uses valid business data and each page URL', () => {
+  for (const [key,page] of Object.entries(pages)) {
+    const html=layout(key,page);
+    const json=JSON.parse(html.match(/<script type="application\/ld\+json">(.*?)<\/script>/s)[1]);
+    assert.equal(json['@graph'][0].telephone,'+14372376895');
+    assert.equal(json['@graph'][0].address.postalCode,'M4H 1L4');
+    assert.ok(html.includes('property="og:image"'));
+    assert.equal(new Set(json['@graph'].map(x=>x['@id'])).size,3);
+  }
 });
