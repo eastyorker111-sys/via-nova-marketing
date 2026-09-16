@@ -52,3 +52,16 @@ h3{font-variation-settings:'opsz' 32}
 .small-link,.service-card .small-link,.text-link{font-size:14px}
 .service-card h3{font-size:29px}.footer-bottom{font-size:12px}
 @media(max-width:760px){.home-hero h1{font-size:clamp(48px,12vw,76px)}.hero-subtitle{font-size:18px}.hero-description{font-size:16px}.home-hero .eyebrow{font-size:10px}.button{font-size:11px}.service-grid{grid-template-columns:1fr}.service-card+.service-card{border-left:0;border-top:1px solid var(--stone)}.service-card{padding:28px 0!important}.service-card>p{max-width:40ch}.service-card h3{font-size:32px;margin:16px 0}.service-card .small-link{font-size:14px}.section-heading>p{font-size:16px}.footer-bottom{font-size:11px}.footer-top nav{font-size:14px}.statement-grid .eyebrow{font-size:10px}}
+/* Consistent hierarchy and casing across every page. */
+.button,.contact-grid .button{font-size:15px;line-height:1.4;letter-spacing:.02em;text-transform:none}
+.eyebrow,.home-hero .eyebrow,.statement-grid .eyebrow,.service-detail .eyebrow{font-size:12px;line-height:1.6;letter-spacing:.16em}
+.index,.status-label,.identity-panel>p,.hero-signature,.landscape-banner p,.work-categories{font-size:11px;line-height:1.7;letter-spacing:.12em}
+.page-intro>p:last-child{font-size:19px;line-height:1.65}
+.service-detail>div:last-child>p,.service-detail li,.contact-copy>p,.contact-note p{font-size:16px;line-height:1.75}
+.work-content .portfolio-placeholder .disclosure,.form-status{font-size:14px;line-height:1.6}
+.contact-grid label{font-size:15px;line-height:1.6;font-weight:500}
+.contact-grid input,.contact-grid select,.contact-grid textarea{font-size:16px;line-height:1.5}
+.contact-grid label span{font-size:14px}
+.contact-note h3{font-size:27px}
+h1,h2,h3{text-wrap:balance}
+@media(max-width:760px){.page-intro>p:last-child{font-size:18px}.hero-signature{font-size:10px}.home-hero .eyebrow{max-width:100%;font-size:11px}.contact-grid .button{font-size:14px}.status-label{letter-spacing:.06em}.work-categories{font-size:11px}.identity-panel>p{font-size:11px}}
