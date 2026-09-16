@@ -4,7 +4,7 @@ Status: **DRAFT — privately hosted with Vercel Authentication**. Agency work i
 
 ## Preview and checks
 
-Private hosting is active at https://via-nova-marketing-eastyorker111-sys-projects.vercel.app. Deployment dpl_DWkFUYmFGprMSEv1aPRshrcCNnhD is READY. Vercel labels its target production; project protection is explicitly set to all deployments. Unauthenticated checks of the deployment URL and alias both returned HTTP 302 to Vercel authentication; the signed-in Chrome session rendered the homepage. Earlier two deployment attempts were removed. No public launch is authorized. `vercel.json` configures the static build and noindex response header. This header is not access protection. Before uploading the site, enable and verify Vercel Authentication for preview deployments in the project settings. Deploy as preview only; do not promote to production or attach a public domain. Verify that an unauthenticated request to the preview is blocked before considering private hosting complete.
+Private hosting is active at https://via-nova-marketing-eastyorker111-sys-projects.vercel.app. Deployment dpl_4aooHCDCLBaJq8NPXqe1nPLeeKkH is READY. Vercel labels its target production; project protection is explicitly set to all deployments. Unauthenticated checks of the deployment URL and alias both returned HTTP 302 to Vercel authentication; the signed-in Chrome session rendered the homepage. Earlier two deployment attempts were removed. No public launch is authorized. `vercel.json` configures the static build and noindex response header. This header is not access protection. Before every upload, verify Vercel Authentication applies to all deployments. Afterward verify unauthenticated access is blocked for the deployment URL and aliases. Do not disable protection or attach a public domain without explicit launch authorization.
 
 Requires Node.js 20+. Run `npm run dev`, then open http://127.0.0.1:4173. Run `npm run build` after editing; `npm test` checks page landmarks, internal destinations, and placeholder disclosures. No build dependencies or third-party tracking.
 
@@ -36,5 +36,4 @@ Brand source: the original logo and final board recovered from the user’s shar
 
 ## Editing and launch gaps
 
-Page copy and shared layout live in `src/pages.mjs`; styling and interactions in `public/assets/`. Contact details, service copy, client case studies, production domain, and an enquiry channel need confirmation before launch. No fake phone number, email address, testimonial, or results are used. Draft pages intentionally have noindex metadata. No hosting or automatic deployment is configured.
-
+Page copy and shared layout live in `src/pages.mjs`; styling and interactions in `public/assets/`. Contact details, service copy, client case studies, production domain, and an enquiry channel need confirmation before launch. No fake phone number, email address, testimonial, or results are used. Draft pages intentionally have noindex metadata. Private hosting is configured. A successful GitHub push and Git-based automatic deployment have not been verified. See docs/WEBSITE-STANDARDS.md for the working design and release system.
