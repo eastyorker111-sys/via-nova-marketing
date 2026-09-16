@@ -38,3 +38,17 @@
 .footer-bottom{color:var(--muted)}
 @media(max-width:760px){.brand-statement{padding-block:38px}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*:before,*:after{transition:none!important;animation:none!important}}
+/* Adobe Source typography: optical display headings and comfortable body text. */
+:root{--serif:'Source Serif 4',Georgia,serif;--sans:'Source Sans 3',Arial,sans-serif}
+body{font-size:17px;line-height:1.7}
+h1,h2,h3{font-optical-sizing:auto;font-weight:400;letter-spacing:-.025em}
+h1,h2{font-variation-settings:'opsz' 60}
+h3{font-variation-settings:'opsz' 32}
+.home-hero h1{line-height:1.04;letter-spacing:-.04em}
+.hero-subtitle{font-size:19px}.hero-description{font-size:16px}
+.site-header nav{font-size:15px}.button{font-size:12px;letter-spacing:.12em}
+.eyebrow,.home-hero .eyebrow{font-size:11px;letter-spacing:.19em}
+.service-card>p,.section-heading>p,.about-copy>p:not(.eyebrow),.statement-grid>p:last-child,.portfolio-placeholder>p,.process-grid p,.values-grid p,.cta p:not(.eyebrow){font-size:16px;line-height:1.7}
+.small-link,.service-card .small-link,.text-link{font-size:14px}
+.service-card h3{font-size:29px}.footer-bottom{font-size:12px}
+@media(max-width:760px){.home-hero h1{font-size:clamp(48px,12vw,76px)}.hero-subtitle{font-size:18px}.hero-description{font-size:16px}.home-hero .eyebrow{font-size:10px}.button{font-size:11px}.service-grid{grid-template-columns:1fr}.service-card+.service-card{border-left:0;border-top:1px solid var(--stone)}.service-card{padding:28px 0!important}.service-card>p{max-width:40ch}.service-card h3{font-size:32px;margin:16px 0}.service-card .small-link{font-size:14px}.section-heading>p{font-size:16px}.footer-bottom{font-size:11px}.footer-top nav{font-size:14px}.statement-grid .eyebrow{font-size:10px}}

@@ -18,7 +18,7 @@ Requires Node.js 20+. Run `npm run dev`, then open http://127.0.0.1:4173. Run `n
 
 The original serif VN monogram, ascending road, gold guiding star, VIA NOVA wordmark, and A Higher Way Forward tagline are retained from the recovered original artwork. The earlier replacement SVG has been removed. Adobe prepared crops of the original logo and monogram; these are raster originals, not newly drawn substitutes.
 
-Playfair Display and Montserrat are hosted locally, with OFL licenses in `public/assets/fonts/`.
+Website typography now uses Adobe's Source Serif 4 for display headings and Source Sans 3 for body and interface text, hosted locally with their licenses in `public/assets/fonts/`. Official sources: https://github.com/adobe-fonts/source-serif and https://github.com/adobe-fonts/source-sans. This supersedes the original website's Playfair Display / Montserrat pairing; the original logo image lettering remains untouched. Small text was enlarged and mobile services use a single column for comfortable reading.
 
 Palette: Deep Navy #0B2D45, Rich Teal #0E6F6B, Warm Ivory #F9F7F2, Metallic Gold #D4AF7C, Stone Grey #D9DBDF.
 
