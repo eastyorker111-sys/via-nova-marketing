@@ -15,7 +15,7 @@
     if (saved && saved.expires > Date.now()) choice = saved.value;
   } catch { /* Storage can be unavailable; default to no Google tracking. */ }
   window.dataLayer = window.dataLayer || [];
-  const gtag = (...args) => window.dataLayer.push(args);
+  function gtag() { window.dataLayer.push(arguments); }
   const deny = { analytics_storage: 'denied', ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied' };
   gtag('consent', 'default', deny);
 
