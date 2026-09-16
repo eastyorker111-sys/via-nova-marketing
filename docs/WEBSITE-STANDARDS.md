@@ -35,7 +35,7 @@ Check image dimensions/compression, reserve media space to avoid movement, load 
 
 Keep secrets out of browser code, generated files, logs, and Git. Prefer safe text insertion over interpreting untrusted input as HTML. Review third-party scripts and validate future server inputs. Load the installed security-best-practices skill for security-specific work; this document is not a security audit.
 
-Hosting is authorized as a private authenticated site only. Before each deployment verify Vercel Authentication applies to all deployments; afterward test unauthenticated access to the deployment and aliases and confirm the authorized Chrome session works. A production label, obscure URL, or noindex setting does not establish privacy. Public launch requires the user's explicit instruction. Never weaken protection merely to automate a check.
+The user explicitly approved public production launch on September 16, 2026. Keep preview deployments authenticated. Verify production at https://vianovamarketing.ca/ works without authentication after releases. Public pages must not carry noindex. Do not weaken preview protection to automate checks.
 
 ## Verification and release sequence
 
