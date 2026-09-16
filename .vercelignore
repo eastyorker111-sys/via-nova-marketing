@@ -1,0 +1,7 @@
+.git
+.env*
+artifacts
+test
+dist
+public/assets/mountain-road.png
+public/assets/via-nova-original.png

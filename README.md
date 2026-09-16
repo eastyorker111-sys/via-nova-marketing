@@ -4,6 +4,8 @@ Status: **DRAFT — not deployed**. Agency work is kept separate from GBC course
 
 ## Preview and checks
 
+Private hosting is requested but not yet deployed. `vercel.json` configures the static build and noindex response header. This header is not access protection. Before uploading the site, enable and verify Vercel Authentication for preview deployments in the project settings. Deploy as preview only; do not promote to production or attach a public domain. Verify that an unauthenticated request to the preview is blocked before considering private hosting complete.
+
 Requires Node.js 20+. Run `npm run dev`, then open http://127.0.0.1:4173. Run `npm run build` after editing; `npm test` checks page landmarks, internal destinations, and placeholder disclosures. No build dependencies or third-party tracking.
 
 ## Five pages
