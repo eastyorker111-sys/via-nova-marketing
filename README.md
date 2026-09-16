@@ -22,6 +22,8 @@ Playfair Display and Montserrat are hosted locally, with OFL licenses in `public
 
 Palette: Deep Navy #0B2D45, Rich Teal #0E6F6B, Warm Ivory #F9F7F2, Metallic Gold #D4AF7C, Stone Grey #D9DBDF.
 
+The latest colour refinement follows the user-supplied original brand board: navy brand statement, teal approach and process panels, ivory surfaces, stone dividers, and restrained gold rules and buttons. The logo artwork remains unchanged. Adobe further refined the existing hero with contrast +12, highlights -12, darks -8, yellow saturation -18, and vibrance +6 to reduce yellow cast while preserving sunrise light.
+
 ## Asset provenance
 
 Brand source: the original logo and final board recovered from the user’s shared Greeting Exchange conversation, https://chatgpt.com/share/6aaaec5b-9a28-83ea-9ae8-e42121f7a5cf. Reference copies remain outside this repository in the adjacent `via-nova-brand-reference` directory.
