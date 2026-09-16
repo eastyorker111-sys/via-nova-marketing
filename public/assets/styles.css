@@ -71,3 +71,7 @@ h1,h2,h3{text-wrap:balance}
 .contact-note address,.footer-contact address{font-style:normal;font-size:16px;line-height:1.7;margin-block:16px}.footer-contact address{flex-basis:100%;margin:0}
 
 .brief-heading{font-size:28px;margin-bottom:14px}.brief-intro{font-size:16px;margin-bottom:26px;color:var(--muted)}.policy-copy{max-width:850px;padding-bottom:80px;font-size:17px;line-height:1.8}.policy-copy h2{font-size:30px;margin:32px 0 16px}.policy-copy a{text-decoration:underline;overflow-wrap:anywhere}.status-label,.index,.work-categories,.identity-panel>p{font-size:12px}.footer-bottom{flex-wrap:wrap;font-size:12px}
+
+/* Keep the approved homepage message on two deliberate lines. */
+.home-hero h1{font-size:clamp(40px,5.2vw,80px);max-width:850px;line-height:1.1;letter-spacing:-.035em}.home-hero h1>span{display:block;white-space:nowrap}
+@media(max-width:760px){.home-hero h1{font-size:clamp(30px,10vw,54px);max-width:100%;line-height:1.15}}

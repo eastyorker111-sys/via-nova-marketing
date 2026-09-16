@@ -34,7 +34,7 @@ Status: REVIEWED, September 16, 2026. Business-project record; not GBC coursewor
 - Contact currently works through phone/email links. The brief remains a local download. Server-delivered forms need an email delivery provider, verified sender and spam controls; no delivery integration is claimed.
 - Google Business Profile requires confirmation of business eligibility, in-person service model, hours and address-display preference before creation. Do not infer that clients can walk into the published mailing address.
 - Backlinks cannot be added by a tag in this site. Use real business profiles, relevant partner mentions with permission, and published work people have a reason to reference. No purchased link scheme, fake traffic or fabricated testimonials.
-- Performance still has room for improvement: original hero PNG is about 2.3 MB and the two full font files total about 1.85 MB. No measured Core Web Vitals or formal accessibility conformance claim. Further asset optimization should preserve the original approved artwork.
+- Performance still has room for improvement: original hero PNG is about 2.3 MB and original TTF fonts are retained for reference. The website now serves WOFF2 fonts totalling 597,644 bytes, down from 1,850,748 bytes (about 68% smaller), with the same typefaces. No measured Core Web Vitals or formal accessibility conformance claim. Further asset optimization should preserve the original approved artwork.
 - Business plan suitability is separate from DNS: current Vercel account is Hobby. No subscription was changed.
 
 ## Next actions
@@ -52,3 +52,6 @@ Status: REVIEWED, September 16, 2026. Business-project record; not GBC coursewor
 - https://vercel.com/docs/analytics/quickstart
 - https://vercel.com/docs/analytics/privacy-policy
 - https://vercel.com/docs/analytics/limits-and-pricing
+
+- Google confirmed the homepage indexing request and added it to the priority crawl queue. Actual indexing remains pending.
+- Homepage headline revised to two intentional lines at the user’s request; responsive sizing checked before release.
