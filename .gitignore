@@ -9,3 +9,9 @@ artifacts/
 
 .vercel
 .env*
+node_modules/
+.next/
+.vercel/
+.env*
+# Local IndexNow submission state
+.indexnow/

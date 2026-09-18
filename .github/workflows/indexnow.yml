@@ -1,0 +1,40 @@
+name: Notify search engines after production deployment
+
+on:
+  deployment_status:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: indexnow-production
+  cancel-in-progress: false
+
+jobs:
+  notify:
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.deployment_status.state == 'success' &&
+       github.event.deployment.environment == 'Production')
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/cache/restore@v4
+        with:
+          path: .indexnow
+          key: indexnow-production-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: indexnow-production-
+      - name: Check the live site and notify IndexNow of changed pages
+        run: node scripts/indexnow.mjs --submit
+      - uses: actions/cache/save@v4
+        with:
+          path: .indexnow
+          key: indexnow-production-${{ github.run_id }}-${{ github.run_attempt }}
