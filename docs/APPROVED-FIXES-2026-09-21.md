@@ -25,3 +25,10 @@ Formspree documentation used: https://help.formspree.io/articles/building-your-f
 Drive migration paused at user's request. Hosting purchase/migration not performed. Logo/banner consistency changes remain deferred. Content workflow and owned-business case-study draft prepared at D:/Via Nova Marketing/Operations/Content-and-case-study-workflow.md and verified uploaded to the new Drive account under Via Nova Marketing. These remain drafts, not published posts/case studies. No invented results or newly proposed service claims published.
 
 Image release: production READY, commit 16008f6. Public homepage/About and optimized images returned HTTP 200; Chrome confirmed WebP image loading. This note precedes the subsequent contact-form release.
+
+## Guided project brief — September 21, 2026
+- Added quote.html: six-step guided enquiry, conditional service questions, back/edit, review, native Formspree submission and no-JavaScript fallback.
+- Linked from main navigation on every page, homepage hero, service links, shared CTA, contact invitation and footer.
+- Preserved quick enquiry and original brand assets. Privacy text now covers optional brief details. No automatic pricing or promises, no answer storage or analytics collection.
+- Build and 15 automated tests passed. Chrome: all affected pages checked at actual 320/390/768/1440 widths without horizontal overflow. Required goals blocked empty advance; keyboard navigation and full-journey branching worked; back navigation retained answers.
+- One labelled test brief submitted through Chrome; Formspree displayed success. New test email receipt in Outlook not independently verified.
