@@ -15,6 +15,7 @@
     "@vercel/analytics": "^2.0.1"
   },
   "devDependencies": {
-    "esbuild": "^0.28.2"
+    "esbuild": "^0.28.2",
+    "sharp": "^0.35.4"
   }
 }
