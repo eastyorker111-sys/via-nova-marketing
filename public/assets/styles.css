@@ -81,3 +81,7 @@ h1,h2,h3{text-wrap:balance}
 .analytics-choice{position:fixed;z-index:80;bottom:20px;left:20px;width:min(480px,calc(100% - 40px));max-height:calc(100dvh - 40px);overflow:auto;background:var(--ivory);color:var(--navy);border:1px solid var(--gold);box-shadow:0 8px 36px #0b2d4533;padding:24px;font-size:16px;line-height:1.55}
 .analytics-choice[hidden]{display:none}.analytics-choice h2{font-size:26px;margin-bottom:12px}.analytics-choice a{text-decoration:underline}.analytics-actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:18px}.analytics-actions .button{justify-content:center;flex:1;padding:12px;min-height:44px}.analytics-actions [hidden]{display:none}
 body:has(.analytics-choice:not([hidden])) .whatsapp-float{visibility:hidden}
+
+/* Give each brand phrase a full line, including narrow mobile footers. */
+.footer-tagline span{display:block}
+@media(max-width:1000px){.footer-top{grid-template-columns:1fr}.footer-top>.brand,.footer-top>.footer-tagline,.footer-top>nav{grid-column:1/-1}.footer-top>.footer-tagline{padding-left:0;border:0;font-size:clamp(22px,3.5vw,28px)}.footer-top>nav{grid-template-columns:repeat(2,minmax(0,1fr));justify-self:stretch}}
