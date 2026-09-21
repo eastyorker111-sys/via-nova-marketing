@@ -26,7 +26,9 @@ for (const [key, page] of Object.entries(pages)) {
 }
 test('placeholders disclose limitations', () => {
   assert.match(pages.work.content, /No client projects or results/);
-  assert.match(pages.contact.content, /does not send or store/);
+  assert.match(pages.contact.content, /action="https:\/\/formspree.io\/f\/xqpaqedp" method="POST"/);
+  assert.match(pages.contact.content, /type="email" name="email"[^>]*required/);
+  assert.match(pages.privacy.content, /Formspree processes and stores submissions/);
 });
 
 test('search metadata uses valid business data and each page URL', () => {

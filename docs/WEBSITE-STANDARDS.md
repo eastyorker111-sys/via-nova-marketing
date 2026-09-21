@@ -6,7 +6,7 @@ Working system recorded 16 September 2026. These rules guide future changes; the
 
 The website introduces Via Nova and helps prospective clients understand its services and take the next step. The founder's stated direction is helping Canadian small businesses from product to branding, combining business experience with marketing education. Final mission, vision, service scope, and whether sourcing belongs here or at TorontoGadgets remain unapproved. Do not turn proposed wording into an approved business claim.
 
-Keep Home, Services, About, Work, and Contact understandable and connected. Each page needs a clear purpose and relevant next action. Use honest portfolio placeholders until real projects are supplied. Never invent clients, testimonials, results, qualifications, or contact details. The present contact feature downloads a brief locally; it does not send an enquiry.
+Keep Home, Services, About, Work, and Contact understandable and connected. Each page needs a clear purpose and relevant next action. Use honest portfolio placeholders until real projects are supplied. Never invent clients, testimonials, results, qualifications, or contact details. The contact form now submits to the separate Via Nova Formspree endpoint. Preserve direct phone, email and WhatsApp alternatives, spam protection and accurate privacy wording.
 
 ## Brand and visual system
 
@@ -42,7 +42,7 @@ The user explicitly approved public production launch on September 16, 2026. Kee
 1. Recover the relevant approved decisions and define what the change must accomplish.
 2. Implement the smallest coherent change. Preserve original artwork and keep unresolved business assumptions visible.
 3. Build and run the relevant existing checks. For visual changes inspect every affected page in the user's Google Chrome through the supported browser tools.
-4. Check representative widths of 320, 390, 768, and 1440px, plus zoom and keyboard behaviour. Verify actual font loading, case, line breaks, overflow, navigation, menu, and contact download as applicable.
+4. Check representative widths of 320, 390, 768, and 1440px, plus zoom and keyboard behaviour. Verify actual font loading, case, line breaks, overflow, navigation, menu, and contact submission as applicable.
 5. Record evidence and limitations. Passing structural tests does not prove visual quality, accessibility, security, or performance.
 6. Commit only intended files. A local commit is not a GitHub push; GitHub push authentication was verified on September 16, 2026.
 7. For an authorized deployment, apply the protection checks above and inspect the resulting live page. Documentation-only changes do not require deployment.
