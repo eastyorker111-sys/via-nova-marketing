@@ -110,3 +110,9 @@ body:has(.analytics-choice:not([hidden])) .whatsapp-float{visibility:hidden}
 #quote-review dd {margin:4px 0;white-space:pre-wrap;}
 @media(max-width:760px) {.quote-layout {grid-template-columns:1fr;gap:24px;}.quote-aside p{max-width:none;} #quote-form{padding:18px;} }
 @media(max-width:760px) {.quote-aside {order:2;} }
+
+/* Guided brief: scoped controls retain the existing brand and page layout. */
+#quote-form[hidden] {display:none!important;}
+#quote-review .small-link,#quote-return {background:transparent;border:0;color:#0E6F6B;font:inherit;text-decoration:underline;cursor:pointer;padding:10px;min-height:44px;}
+#quote-form [data-error] {color:#922f20;font-weight:600;}
+#quote-route-note {padding:12px;border-left:3px solid #0E6F6B;}

@@ -13,11 +13,13 @@ test('email brief groups multiple services, preserves text and excludes provider
   assert.deepEqual(briefEntries(entries), [['Services','Brand, Website'],['Goals','<script>plain text</script>']]);
   assert.equal(briefSummary(entries), 'Services:\nBrand, Website\n\nGoals:\n<script>plain text</script>');
 });
-test('guided brief stays discoverable and has a native submission fallback', () => {
+test('guided brief stays discoverable and preserves provider and quick enquiry fallback', () => {
   for (const [key, page] of Object.entries(pages)) assert.match(layout(key,page), /class="button nav-cta" href="quote.html"/);
   assert.match(pages.index.content, /Build your project/);
   assert.match(pages.contact.content, /href="quote.html"/);
   assert.match(pages.quote.content, /action="https:\/\/formspree.io\/f\/xqpaqedp" method="POST"/);
   assert.match(pages.quote.content, /name="Goals and audience" required/);
-  assert.equal((pages.quote.content.match(/<fieldset data-step>/g)||[]).length,6);
+  assert.match(pages.quote.content, /data-question="Product stage"/);
+  assert.match(pages.quote.content, /id="quote-fallback"/);
+  assert.match(pages.quote.content, /send a quick enquiry/);
 });
