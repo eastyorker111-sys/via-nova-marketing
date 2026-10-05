@@ -57,3 +57,6 @@ The user explicitly approved public production launch on September 16, 2026. Kee
 - Figma remains optional for a dedicated design-system deliverable. It is not required to maintain this static website.
 
 Next substantive review: assess the current site against this system, address caption readability and CSS consistency, and keep mission/service-scope decisions separate from visual corrections.
+
+## Approved content refresh — 5 October 2026
+The current owner request replaces the earlier portfolio-placeholder requirement: retain work.html but label it How we help and explain customer needs/process, without project names or invented proof. Present business/marketing planning, branding/materials, business websites/Shopify/e-commerce, content/video/social/campaigns. Use the supplied core message and practical agree-price-before-starting approach. Selected versioned enhanced logo/hero have been incorporated locally after their previews; originals remain preserved. Fonts/palette unchanged. Complete combined preview must be reviewed before this refresh is published. See D:/Via Nova Marketing/Website Previews/2026-10-05-Combined-Review/REVIEW.md.

@@ -15,7 +15,7 @@ test('email brief groups multiple services, preserves text and excludes provider
 });
 test('guided brief stays discoverable and preserves provider and quick enquiry fallback', () => {
   for (const [key, page] of Object.entries(pages)) assert.match(layout(key,page), /class="button nav-cta" href="quote.html"/);
-  assert.match(pages.index.content, /Build your project/);
+  assert.match(pages.index.content, /Tell us what you need/);
   assert.match(pages.contact.content, /href="quote.html"/);
   assert.match(pages.quote.content, /action="https:\/\/formspree.io\/f\/xqpaqedp" method="POST"/);
   assert.match(pages.quote.content, /name="Goals and audience" required/);

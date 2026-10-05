@@ -16,7 +16,7 @@ const content = a => hasService(a, 'Content & social media');
 export const questions = [
   q('Project goal', 'What brings you here?', 'Choose the closest fit. You can change any answer later.', ['Start something new', 'Improve my current presence', 'Get ongoing support', 'Launch a product', unsure], undefined, true),
   q('Product stage', 'Where is your product today?', 'This helps us tailor the conversation; it does not commit you to a package.', ['An idea', 'In development', 'Ready to launch', unsure], launch, true),
-  { ...q('Services', 'What would you like help with?', 'Choose one or several. A product launch can need just a video, logo or website.', serviceChoices, undefined, true), multiple: true },
+  { ...q('Services', 'What would you like help with?', 'Choose one or several. Website includes business websites, Shopify and other online stores. Choose Help me decide if you’re unsure.', serviceChoices, undefined, true), multiple: true },
   q('Business', 'What is your business or product called?', 'Optional. A working name is fine. Leave this blank if you have not decided.'),
   q('Goals and audience', 'What would you like this work to achieve?', 'For example: explain a new offer, improve the brand, attract enquiries or support a launch. “I need guidance” is a useful answer.', undefined, undefined, true),
   q('Audience', 'Who do you want to reach?', 'For example: local families or Canadian business owners. Say “not sure” if you need help defining this.'),
@@ -39,7 +39,7 @@ export const questions = [
   q('Website starting point', 'Are we creating a new website or improving one?', 'We will reuse the website link and materials you have already shared.', ['A new website', 'Improve an existing website', unsure], website),
   q('Website challenge', 'What needs improving on the current website?', 'For example: confusing navigation, outdated information or difficulty making an enquiry.', undefined, a => website(a) && a['Website starting point'] === 'Improve an existing website'),
   q('Website action', 'What should visitors be able to do?', 'Choose the main action. You can describe additional needs next.', ['Make an enquiry', 'Book an appointment', 'Buy online', 'Learn about the business', unsure], website),
-  q('Website features', 'What features or website content do you need help with?', 'For example: bookings, a catalogue, copy or product pages. Mention only what is missing from the assets you shared. Feasibility and scope will be confirmed.', undefined, website),
+  q('Website features', 'What features or website content do you need help with?', 'For example: Shopify, an online store, bookings, a catalogue, copy or product pages. Tell us what you need; feasibility and scope will be confirmed.', undefined, website),
   q('Video purpose', 'What is the video for?', 'Choose the closest purpose; your overall goal is already saved.', ['Introduce a business or product', 'Explain how something works', 'Promote an offer', 'Share a story or testimonial', unsure], video),
   q('Content channels', 'Where will people see this content?', 'For example: Instagram, LinkedIn, YouTube, your website or paid ads. Say “I need guidance” if you are unsure.', undefined, a => video(a) || content(a) || (launch(a) && (strategy(a) || hasService(a, 'Campaigns')))),
   q('Video message', 'What is the main thing viewers should remember?', 'A short message is enough, or ask for help developing it.', undefined, video),
