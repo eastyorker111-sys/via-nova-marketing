@@ -81,5 +81,6 @@
     const href = link.getAttribute('href') || '';
     const method = href.startsWith('tel:') ? 'phone' : href.startsWith('mailto:') ? 'email' : href.startsWith('https://wa.me/14372376895') ? 'whatsapp' : '';
     if (method) gtag('event', 'contact_click', { contact_method: method });
+    if (href === 'quote.html' || href === '/quote.html') gtag('event', 'project_request_click', { entry_point: location.pathname });
   });
 })();

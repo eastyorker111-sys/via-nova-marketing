@@ -3,7 +3,7 @@ export const contactForm = `<form id="enquiry-form" action="https://formspree.io
 <p id="enquiry-help" class="brief-intro">Send your enquiry directly to Via Nova. Name, email and message are required.</p>
 <div class="field-pair"><label>Your name<input name="name" autocomplete="name" required maxlength="120"></label><label>Your email<input type="email" name="email" autocomplete="email" required maxlength="254"></label></div>
 <label>Business <span>(optional)</span><input name="business" autocomplete="organization" maxlength="160"></label>
-<label>What would you like help with? <span>(optional)</span><select name="service"><option value="Not specified">Select a service</option><option>Brand strategy</option><option>Brand identity</option><option>Web &amp; digital</option><option>Content &amp; campaigns</option><option>I’m still exploring</option></select></label>
+<label>What would you like help with? <span>(optional)</span><select name="service"><option value="Not specified">Select a service</option><option>Business &amp; marketing planning</option><option>Branding, logos &amp; materials</option><option>Business website</option><option>Shopify or online store</option><option>Content, video &amp; social media</option><option>Campaign support</option><option>Connected support / full journey</option><option>I’m still exploring</option></select></label>
 <label>Your message<textarea name="message" required rows="5" maxlength="5000" placeholder="Tell us what you need and what you would like to achieve."></textarea></label>
 <div hidden><label>Leave this field empty<input name="_gotcha" tabindex="-1" autocomplete="off"></label></div>
 <input type="hidden" name="_subject" value="Via Nova Marketing — website enquiry">
