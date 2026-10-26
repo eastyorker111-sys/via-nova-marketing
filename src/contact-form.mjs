@@ -9,5 +9,5 @@ export const contactForm = `<form id="enquiry-form" action="https://formspree.io
 <input type="hidden" name="_subject" value="Via Nova Marketing — website enquiry">
 <p class="brief-intro">By sending, you ask us to respond to your enquiry. Formspree processes your submission and may ask you to complete a spam check. Please don’t include passwords or payment details. <a href="privacy.html">Privacy information</a>.</p>
 <button class="button" type="submit">Send enquiry <span aria-hidden="true">↗</span></button>
-<p class="form-status">After sending, you’ll see a confirmation page. If sending fails, return here or email <a href="mailto:east_yorker@outlook.com">east_yorker@outlook.com</a>.</p>
+<p class="form-status">After sending, you’ll see a confirmation page. If sending fails, return here or email <a href="mailto:hello@vianovamarketing.ca">hello@vianovamarketing.ca</a>.</p>
 </form>`;

@@ -5,7 +5,7 @@ export function searchMetadata(key, page) {
   const business = {
     '@type': 'Organization', '@id': `${origin}/#organization`, name: 'Via Nova Marketing',
     url: `${origin}/`, logo: `${origin}/assets/logo-enhanced-v1.png`,
-    telephone: '+14372376895', email: 'east_yorker@outlook.com',
+    telephone: '+14372376895', email: 'hello@vianovamarketing.ca',
     areaServed: { '@type': 'Country', name: 'Canada' },
     sameAs: ['https://www.linkedin.com/company/vianovamarketing/', 'https://www.facebook.com/profile.php?id=61594206973632', 'https://www.google.com/maps?cid=17214167422504729291'],
     parentOrganization: { '@type': 'Organization', name: 'EAST YORKER CORP.' },
