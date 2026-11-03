@@ -1,3 +1,4 @@
+import {communications} from './communications.mjs';
 const json = (status, body) => new Response(JSON.stringify(body), {status, headers:{'Content-Type':'application/json','Cache-Control':'no-store','X-Content-Type-Options':'nosniff'}});
 export async function admin(request, env) {
   if (!env.ADMIN_TOKEN || env.ADMIN_TOKEN.length < 40) return json(503,{error:'Private access is not configured'});
@@ -7,14 +8,15 @@ export async function admin(request, env) {
   let mismatch=0; for(let i=0;i<a.length;i++) mismatch |= a[i]^b[i];
   if(mismatch) return json(401,{error:'Authentication required'});
   try {
+    if(new URL(request.url).pathname==='/api/admin/messages')return await communications(request,env);
     if(request.method==='GET') {
       const params=new URL(request.url).searchParams;
       if(params.get('export')==='backup'){
         // D1 batch is a transaction: the backup must not mix owner revisions.
-        const tables=['enquiries','notification_outbox','owner_audit'];
+        const tables=['enquiries','notification_outbox','owner_audit','communication_messages'];
         const data=await env.DB.batch(tables.map(table=>env.DB.prepare(`SELECT * FROM ${table} ORDER BY ${table==='notification_outbox'?'enquiry_id':'id'} LIMIT 1001`).bind()));
         if(data.some(t=>t.results.length>1000))return json(413,{error:'This backup exceeds the in-app limit. Use the authorized full D1 export; no partial backup was returned.'});
-        return json(200,{format:'via-nova-marketing-backup',version:1,exportedAt:new Date().toISOString(),source:'via-nova-marketing-enquiries',tables:tables.map((table,i)=>({table,rows:data[i].results}))});
+        return json(200,{format:'via-nova-marketing-backup',version:2,exportedAt:new Date().toISOString(),source:'via-nova-marketing-enquiries',tables:tables.map((table,i)=>({table,rows:data[i].results}))});
       }
       const cursor=params.get('before') || '9999',cursorId=params.get('before_id')||'ffffffff-ffff-ffff-ffff-ffffffffffff';
       if(cursor.length>80||!/^[\da-f-]{36}$/i.test(cursorId))return json(400,{error:'Invalid cursor'});

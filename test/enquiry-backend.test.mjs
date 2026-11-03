@@ -61,3 +61,36 @@ test('private pagination preserves equal timestamps and backup contains original
   assert.equal((await worker.fetch(new Request('https://example.invalid/api/admin/enquiries?export=backup'),env)).status,401);
  }finally{db.close();}
 });
+
+test('communication records are private, immutable, deduplicated and included in restorable backups',async()=>{
+ const {db,env}=setup();env.ADMIN_TOKEN='c'.repeat(64);
+ const call=(method,body,query='',token=env.ADMIN_TOKEN)=>worker.fetch(new Request('https://example.invalid/api/admin/messages'+query,{method,headers:{Authorization:`Bearer ${token}`},body:body?JSON.stringify(body):undefined}),env);
+ const message={id:crypto.randomUUID(),enquiry_id:sample.id,channel:'email',direction:'incoming',source:'verified_import',provider_message_id:'synthetic-1',provider_thread_id:'synthetic-thread',occurred_at:'2026-11-03T20:00:00.000Z',body:'TEST ONLY incoming reply',delivery_state:'received',workflow:'proposal',project_reference:'TEST-PROJECT',invoice_reference:''};
+ try{
+  await worker.fetch(req(),env);db.prepare('UPDATE enquiries SET owner_notes=?').run('Preserved owner next action');
+  assert.equal((await call('POST',message,'','wrong')).status,401);
+  const receipt=await(await call('POST',message)).json();assert.equal(receipt.stored,true);assert.equal(receipt.sentByThisAction,false);assert.equal(receipt.source,'manual');
+  assert.equal((await call('POST',message)).status,200);
+  const providerDuplicate=await(await call('POST',{...message,id:crypto.randomUUID()})).json();assert.equal(providerDuplicate.id,message.id);
+  assert.equal((await call('POST',{...message,body:'Overwrite attempt'})).status,409);
+  assert.equal((await call('POST',{...message,id:crypto.randomUUID(),enquiry_id:crypto.randomUUID()})).status,404);
+  assert.equal((await call('POST',{...message,id:crypto.randomUUID(),provider_message_id:'second',delivery_state:'draft'})).status,400);
+  assert.equal((await call('POST',message,'?import=provider')).status,503);
+  const outgoing={...message,id:crypto.randomUUID(),provider_message_id:'synthetic-2',direction:'outgoing',delivery_state:'draft',body:'TEST ONLY unsent proposal',invoice_reference:'TEST-INVOICE'};
+  assert.equal((await call('POST',outgoing)).status,200);
+  const timeline=await(await call('GET',null,'?enquiry_id='+sample.id)).json();assert.equal(timeline.rows.length,2);assert.equal(timeline.connectors.email,'pending_access');assert.equal(timeline.rows[0].payload_hash,undefined);
+  assert.equal(db.prepare('SELECT owner_notes FROM enquiries').get().owner_notes,'Preserved owner next action');assert.equal(db.prepare('SELECT message FROM enquiries').get().message,sample.message);
+  const backup=await(await worker.fetch(new Request('https://example.invalid/api/admin/enquiries?export=backup',{headers:{Authorization:`Bearer ${env.ADMIN_TOKEN}`}}),env)).json();assert.equal(backup.version,2);assert.equal(backup.tables.find(t=>t.table==='communication_messages').rows.length,2);
+  const restored=new DatabaseSync(':memory:');try{restored.exec(readFileSync(new URL('../operations/enquiries/schema.sql',import.meta.url),'utf8'));for(const {table,rows} of backup.tables)for(const row of rows){const keys=Object.keys(row);restored.prepare(`INSERT INTO ${table} (${keys.join(',')}) VALUES (${keys.map(()=>'?').join(',')})`).run(...Object.values(row));}for(const {table} of backup.tables)assert.deepEqual(restored.prepare('SELECT * FROM '+table+' ORDER BY 1').all(),db.prepare('SELECT * FROM '+table+' ORDER BY 1').all());}finally{restored.close()}
+  env.DB.prepare=()=>{throw Error('storage unavailable')};assert.equal((await call('POST',{...outgoing,id:crypto.randomUUID()})).status,503);
+ }finally{db.close()}
+});
+
+test('message pagination retains equal timestamps without gaps or duplicate records',async()=>{
+ const {db,env}=setup();env.ADMIN_TOKEN='d'.repeat(64);try{
+  await worker.fetch(req(),env);
+  for(let i=0;i<103;i++)db.prepare('INSERT INTO communication_messages VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)').run('00000000-0000-4000-8000-'+String(i).padStart(12,'0'),sample.id,'email','incoming','manual',null,null,'2026-11-03T00:00:00Z','2026-11-03T01:00:00Z','TEST ONLY','received','support','','','hash');
+  const read=async(cursor={})=>(await(await worker.fetch(new Request('https://example.invalid/api/admin/messages?'+new URLSearchParams({enquiry_id:sample.id,...cursor}),{headers:{Authorization:`Bearer ${env.ADMIN_TOKEN}`}}),env)).json());
+  const first=await read(),second=await read(first.next);assert.equal(first.rows.length,100);assert.equal(second.rows.length,3);assert.equal(second.next,null);assert.equal(new Set([...first.rows,...second.rows].map(r=>r.id)).size,103);
+ }finally{db.close()}
+});

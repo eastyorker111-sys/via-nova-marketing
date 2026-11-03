@@ -3,7 +3,7 @@ let rows=[],loading=false,next=null;
 const dirty=new Set(),saving=new Set();
 function protectDrafts(){
  if(!dirty.size&&!saving.size)return false;
- $('connection').textContent='Save or discard your owner-field changes before refreshing or changing the filter. Your unsaved text is still on this page.';
+ $('connection').textContent='Save or discard your unsaved changes before refreshing or changing the filter. Your unsaved text is still on this page.';
  return true;
 }
 window.addEventListener('beforeunload',event=>{if(dirty.size||saving.size){event.preventDefault();event.returnValue='';}});
@@ -32,7 +32,10 @@ function render(){
       const result=await response.json();if(!response.ok)throw Error(result.error||'Save could not be confirmed');
       r.revision=result.revision;r.owner_status=status.value;r.owner_notes=notes.value;r.follow_up_due=due.value;dirty.delete(r.id);feedback.textContent='Saved. Original submission unchanged.';
     }catch(error){feedback.textContent=error.message;feedback.className='error';}finally{saving.delete(r.id);for(const control of [button,discard,status,due,notes])control.disabled=false;feedback.focus();}});
-    card.append(form);$('records').append(card);
+    card.append(form);
+    const conversationButton=el('button','Open communication timeline');conversationButton.type='button';
+    conversationButton.addEventListener('click',()=>{if(conversationButton.disabled)return;conversationButton.disabled=true;window.attachCommunication(card,r,{dirty,saving});});
+    card.append(conversationButton);$('records').append(card);
   }
 }
 async function refresh(older=false){
