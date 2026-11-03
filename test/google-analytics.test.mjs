@@ -4,7 +4,7 @@ import { readFileSync } from 'node:fs';
 import { runInNewContext } from 'node:vm';
 
 const source = readFileSync(new URL('../public/assets/google-analytics.js', import.meta.url), 'utf8');
-function setup({ choice, dnt = '0', host = 'vianovamarketing.ca' } = {}) {
+function setup({ choice, dnt = '0', gpc = false, host = 'vianovamarketing.ca' } = {}) {
   const handlers = {};
   const element = key => ({ hidden: false, focus() {}, addEventListener: (_, fn) => handlers[key] = fn });
   const accept = element('accept'), decline = element('decline'), settings = element('settings');
@@ -18,7 +18,7 @@ function setup({ choice, dnt = '0', host = 'vianovamarketing.ca' } = {}) {
   };
   let stored = choice ? JSON.stringify({ value: choice, expires: Date.now() + 100000 }) : null;
   const window = {};
-  runInNewContext(source, { document, window, navigator: { doNotTrack: dnt }, location: { hostname: host, origin: `https://${host}`, pathname: '/contact.html', search: '?secret=private', hash: '#secret', reload() {} }, localStorage: { getItem: () => stored, setItem: (_, value) => stored = value }, URL, Date, Set });
+  runInNewContext(source, { document, window, navigator: { doNotTrack: dnt, globalPrivacyControl: gpc }, location: { hostname: host, origin: `https://${host}`, pathname: '/contact.html', search: '?secret=private', hash: '#secret', reload() {} }, localStorage: { getItem: () => stored, setItem: (_, value) => stored = value }, URL, Date, Set });
   return { scripts, handlers, panel, window, events, document };
 }
 test('Google tag is blocked until acceptance and when declined', () => {
@@ -49,5 +49,8 @@ test('acceptance loads once, sends clean URL and only contact method', () => {
 });
 test('privacy signal and nonproduction pages never load Google', () => {
   assert.equal(setup({ choice: 'granted', dnt: '1' }).scripts.length, 0);
+  const protectedPage = setup({ choice: 'granted', gpc: true });
+  protectedPage.handlers.accept();
+  assert.equal(protectedPage.scripts.length, 0);
   assert.equal(setup({ choice: 'granted', host: 'localhost' }).scripts.length, 0);
 });
