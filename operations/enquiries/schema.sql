@@ -12,7 +12,15 @@ CREATE TABLE IF NOT EXISTS enquiries (
  owner_status TEXT NOT NULL DEFAULT 'New',
  owner_notes TEXT NOT NULL DEFAULT '',
  follow_up_due TEXT,
- synced_at TEXT
+ synced_at TEXT,
+ revision INTEGER NOT NULL DEFAULT 0
+);
+CREATE TABLE IF NOT EXISTS owner_audit (
+ id TEXT PRIMARY KEY,
+ enquiry_id TEXT NOT NULL REFERENCES enquiries(id),
+ changed_at TEXT NOT NULL,
+ actor TEXT NOT NULL,
+ previous_revision INTEGER NOT NULL
 );
 CREATE INDEX IF NOT EXISTS enquiries_received ON enquiries(received_at);
 CREATE TABLE IF NOT EXISTS notification_outbox (
