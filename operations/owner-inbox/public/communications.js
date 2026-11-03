@@ -15,6 +15,7 @@ window.attachCommunication=(card,record,{dirty,saving})=>{
   try{const query=new URLSearchParams({enquiry_id:record.id,...(append?cursor:{})});const response=await fetch('/api/messages?'+query,{credentials:'same-origin',cache:'no-store'});const data=await response.json();if(!response.ok)throw Error(data.error||'Could not load messages');
    if(!append)list.replaceChildren();for(const row of data.rows){const item=make('div');item.className='communication-entry';
     item.append(make('h4',`${row.channel} · ${row.direction} · ${states[row.delivery_state]||row.delivery_state}`),make('p',`Occurred: ${row.occurred_at} · Recorded: ${row.recorded_at} · Source: ${row.source==='manual'?'Manual owner entry':'Verified import'}`));
+    item.append(make('p',`Sender role: ${row.sender_role||'not specified'} · Protected attachment reference: ${row.attachment_reference||'none'}`));
     const body=make('p',row.body);body.className='message';item.append(body,make('p',`Workflow: ${row.workflow} · Project: ${row.project_reference||'not linked'} · Invoice: ${row.invoice_reference||'not linked'}`),make('p',`Message reference: ${row.id}${row.provider_message_id?' · Provider message: '+row.provider_message_id:''}${row.provider_thread_id?' · Provider thread: '+row.provider_thread_id:''}`));list.append(item);
    }cursor=data.next;older.hidden=!cursor;status.textContent=data.rows.length?'Saved timeline loaded. No messages sent.':'No saved messages. Original enquiry remains above.';
   }catch(error){status.textContent=error.message+' Previously displayed messages may be old. Retry refresh.';}finally{reading=false;reload.disabled=older.disabled=false;}
@@ -33,7 +34,9 @@ window.attachCommunication=(card,record,{dirty,saving})=>{
  field('workflow','Related work',[['qualification','Qualification'],['proposal','Proposal'],['delivery','Delivery'],['invoice','Invoice'],['support','Support']]);
  const time=field('occurred_at','When it happened (your local time)');time.required=true;
  const now=new Date();time.value=new Date(now.getTime()-now.getTimezoneOffset()*60000).toISOString().slice(0,16);
+ field('sender_role','Sender role',[['not_specified','Not specified'],['customer','Customer'],['business','Business'],['supplier','Supplier'],['other','Other']]);
  field('body','Message or call notes').required=true;
+ const attachment=field('attachment_reference','Protected attachment reference (optional; file stays in its source)');attachment.maxLength=500;form.append(make('p','Reference only: attachments remain in the authorized mailbox, private Drive folder or project files. Do not paste access tokens or public sharing links. This form does not upload, share or fetch files. Verify source permissions before referring to an attachment.'));
  field('project_reference','Project reference (optional)');field('invoice_reference','Invoice reference (optional)');
  field('provider_message_id','Provider message ID (optional; must be exact)');field('provider_thread_id','Provider thread ID (optional)');
  const submit=make('button','Record message — does not send'),discard=make('button','Discard unsaved message'),feedback=make('p');submit.type='submit';discard.type='button';feedback.setAttribute('role','status');feedback.tabIndex=-1;

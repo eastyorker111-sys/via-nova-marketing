@@ -18,11 +18,11 @@ export async function admin(request, env) {
         const tables=['enquiries','notification_outbox','owner_audit','communication_messages'];
         const data=await env.DB.batch(tables.map(table=>env.DB.prepare(`SELECT * FROM ${table} ORDER BY ${table==='notification_outbox'?'enquiry_id':'id'} LIMIT 1001`).bind()));
         if(data.some(t=>t.results.length>1000))return json(413,{error:'This backup exceeds the in-app limit. Use the authorized full D1 export; no partial backup was returned.'});
-        return json(200,{format:'via-nova-marketing-backup',version:2,exportedAt:new Date().toISOString(),source:'via-nova-marketing-enquiries',tables:tables.map((table,i)=>({table,rows:data[i].results}))});
+        return json(200,{format:'via-nova-marketing-backup',version:3,exportedAt:new Date().toISOString(),source:'via-nova-marketing-enquiries',tables:tables.map((table,i)=>({table,rows:data[i].results}))});
       }
       const cursor=params.get('before') || '9999',cursorId=params.get('before_id')||'ffffffff-ffff-ffff-ffff-ffffffffffff';
       if(cursor.length>80||!/^[\da-f-]{36}$/i.test(cursorId))return json(400,{error:'Invalid cursor'});
-      const data=await env.DB.prepare(`SELECT e.id,e.received_at,e.form_kind,e.name,e.email,e.business,e.message,e.is_test,e.marketing_consent,e.owner_status,e.owner_notes,e.follow_up_due,e.revision,n.state AS notification_state,n.attempts FROM enquiries e LEFT JOIN notification_outbox n ON n.enquiry_id=e.id WHERE (e.received_at < ? OR (e.received_at = ? AND e.id < ?)) ORDER BY e.received_at DESC,e.id DESC LIMIT 101`).bind(cursor,cursor,cursorId).all();
+      const data=await env.DB.prepare(`SELECT e.id,e.received_at,e.form_kind,e.name,e.email,e.business,e.message,e.is_test,e.marketing_consent,e.owner_status,e.owner_notes,e.follow_up_due,e.revision,e.customer_reference,n.state AS notification_state,n.attempts FROM enquiries e LEFT JOIN notification_outbox n ON n.enquiry_id=e.id WHERE (e.received_at < ? OR (e.received_at = ? AND e.id < ?)) ORDER BY e.received_at DESC,e.id DESC LIMIT 101`).bind(cursor,cursor,cursorId).all();
       const rows=data.results || [];
       const last=rows[Math.min(99,rows.length-1)];
       return json(200,{rows:rows.slice(0,100),more:rows.length>100,next:rows.length>100?{before:last.received_at,before_id:last.id}:null,refreshedAt:new Date().toISOString(),source:'Via Nova Marketing dedicated database',mode:env.MODE||'staging'});
@@ -31,11 +31,19 @@ export async function admin(request, env) {
     const raw=await request.text();if(raw.length>12000)return json(413,{error:'Update too large'});
     const input=JSON.parse(raw);
     if(!/^[\da-f-]{36}$/i.test(input.id)||!Number.isSafeInteger(input.revision)||input.revision<0||!['New','Discussing','Quoted','Won','Lost','On hold','Spam','Closed'].includes(input.status)||typeof input.notes!=='string'||input.notes.length>5000||(input.due!==''&&!/^\d{4}-\d{2}-\d{2}$/.test(input.due)))return json(400,{error:'Check status, notes and follow-up date'});
+    const current=await env.DB.prepare('SELECT customer_reference,is_test FROM enquiries WHERE id=?').bind(input.id).first();
+    if(!current)return json(404,{error:'Enquiry not found'});
+    const customer=input.customer_reference===undefined?current.customer_reference:input.customer_reference;
+    if(customer!==current.customer_reference){
+      if(input.confirm_customer_link!==true||!/^VNM-C-[a-f0-9]{32}$/.test(customer||''))return json(400,{error:'Confirm the customer reference assignment explicitly; never match by name or phone alone.'});
+      const target=await env.DB.prepare('SELECT id FROM enquiries WHERE customer_reference=? AND is_test=? UNION SELECT enquiry_id AS id FROM owner_audit WHERE enquiry_id=? AND (previous_customer_reference=? OR next_customer_reference=?) LIMIT 1').bind(customer,current.is_test,input.id,customer,customer).first();
+      if(!target)return json(400,{error:'Use an existing customer reference from this business and the same test/live category.'});
+    }
     const eventId=crypto.randomUUID(),now=new Date().toISOString();
     // Both audit and update use the expected revision; stale tabs cannot erase owner edits.
     await env.DB.batch([
-      env.DB.prepare('INSERT INTO owner_audit (id,enquiry_id,changed_at,actor,previous_revision) SELECT ?,id,?,?,revision FROM enquiries WHERE id=? AND revision=?').bind(eventId,now,'Nabil via private owner inbox',input.id,input.revision),
-      env.DB.prepare('UPDATE enquiries SET owner_status=?,owner_notes=?,follow_up_due=?,revision=revision+1 WHERE id=? AND revision=?').bind(input.status,input.notes,input.due||null,input.id,input.revision)
+      env.DB.prepare('INSERT INTO owner_audit (id,enquiry_id,changed_at,actor,previous_revision,previous_customer_reference,next_customer_reference) SELECT ?,id,?,?,revision,customer_reference,? FROM enquiries WHERE id=? AND revision=?').bind(eventId,now,'Nabil via private owner inbox',customer,input.id,input.revision),
+      env.DB.prepare('UPDATE enquiries SET owner_status=?,owner_notes=?,follow_up_due=?,customer_reference=?,revision=revision+1 WHERE id=? AND revision=?').bind(input.status,input.notes,input.due||null,customer,input.id,input.revision)
     ]);
     const applied=await env.DB.prepare('SELECT id FROM owner_audit WHERE id=?').bind(eventId).first();
     if(!applied)return json(409,{error:'This record changed elsewhere. Reload before saving; your text is still on screen.'});

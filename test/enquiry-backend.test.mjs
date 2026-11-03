@@ -54,7 +54,7 @@ test('private pagination preserves equal timestamps and backup contains original
  const read=path=>worker.fetch(new Request('https://example.invalid/api/admin/enquiries'+path,{headers:{Authorization:`Bearer ${env.ADMIN_TOKEN}`}}),env);
  try{
   await worker.fetch(req(),env);const original=db.prepare('SELECT * FROM enquiries').get();
-  for(let i=1;i<=105;i++){const id='00000000-0000-4000-8000-'+String(i).padStart(12,'0');db.prepare('INSERT INTO enquiries SELECT ?,payload_hash,received_at,form_kind,name,email,business,message,is_test,marketing_consent,owner_status,owner_notes,follow_up_due,synced_at,revision FROM enquiries WHERE id=?').run(id,sample.id);}
+  for(let i=1;i<=105;i++){const id='00000000-0000-4000-8000-'+String(i).padStart(12,'0');db.prepare('INSERT INTO enquiries SELECT ?,payload_hash,received_at,form_kind,name,email,business,message,is_test,marketing_consent,owner_status,owner_notes,follow_up_due,synced_at,revision,customer_reference FROM enquiries WHERE id=?').run(id,sample.id);}
   const first=await(await read('')).json();assert.equal(first.rows.length,100);assert.ok(first.more);
   const second=await(await read('?'+new URLSearchParams(first.next))).json();assert.equal(second.rows.length,6);assert.equal(second.more,false);assert.equal(new Set([...first.rows,...second.rows].map(r=>r.id)).size,106);
   const backup=await(await read('?export=backup')).json();assert.equal(backup.format,'via-nova-marketing-backup');assert.equal(backup.tables[0].rows.length,106);assert.equal(backup.tables[1].rows.length,1);assert.deepEqual(backup.tables[0].rows.find(r=>r.id===sample.id),{...original});
@@ -80,7 +80,7 @@ test('communication records are private, immutable, deduplicated and included in
   assert.equal((await call('POST',outgoing)).status,200);
   const timeline=await(await call('GET',null,'?enquiry_id='+sample.id)).json();assert.equal(timeline.rows.length,2);assert.equal(timeline.connectors.email,'pending_access');assert.equal(timeline.rows[0].payload_hash,undefined);
   assert.equal(db.prepare('SELECT owner_notes FROM enquiries').get().owner_notes,'Preserved owner next action');assert.equal(db.prepare('SELECT message FROM enquiries').get().message,sample.message);
-  const backup=await(await worker.fetch(new Request('https://example.invalid/api/admin/enquiries?export=backup',{headers:{Authorization:`Bearer ${env.ADMIN_TOKEN}`}}),env)).json();assert.equal(backup.version,2);assert.equal(backup.tables.find(t=>t.table==='communication_messages').rows.length,2);
+  const backup=await(await worker.fetch(new Request('https://example.invalid/api/admin/enquiries?export=backup',{headers:{Authorization:`Bearer ${env.ADMIN_TOKEN}`}}),env)).json();assert.equal(backup.version,3);assert.equal(backup.tables.find(t=>t.table==='communication_messages').rows.length,2);
   const restored=new DatabaseSync(':memory:');try{restored.exec(readFileSync(new URL('../operations/enquiries/schema.sql',import.meta.url),'utf8'));for(const {table,rows} of backup.tables)for(const row of rows){const keys=Object.keys(row);restored.prepare(`INSERT INTO ${table} (${keys.join(',')}) VALUES (${keys.map(()=>'?').join(',')})`).run(...Object.values(row));}for(const {table} of backup.tables)assert.deepEqual(restored.prepare('SELECT * FROM '+table+' ORDER BY 1').all(),db.prepare('SELECT * FROM '+table+' ORDER BY 1').all());}finally{restored.close()}
   env.DB.prepare=()=>{throw Error('storage unavailable')};assert.equal((await call('POST',{...outgoing,id:crypto.randomUUID()})).status,503);
  }finally{db.close()}
@@ -89,7 +89,7 @@ test('communication records are private, immutable, deduplicated and included in
 test('message pagination retains equal timestamps without gaps or duplicate records',async()=>{
  const {db,env}=setup();env.ADMIN_TOKEN='d'.repeat(64);try{
   await worker.fetch(req(),env);
-  for(let i=0;i<103;i++)db.prepare('INSERT INTO communication_messages VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)').run('00000000-0000-4000-8000-'+String(i).padStart(12,'0'),sample.id,'email','incoming','manual',null,null,'2026-11-03T00:00:00Z','2026-11-03T01:00:00Z','TEST ONLY','received','support','','','hash');
+  for(let i=0;i<103;i++)db.prepare('INSERT INTO communication_messages (id,enquiry_id,channel,direction,source,provider_message_id,provider_thread_id,occurred_at,recorded_at,body,delivery_state,workflow,project_reference,invoice_reference,payload_hash) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)').run('00000000-0000-4000-8000-'+String(i).padStart(12,'0'),sample.id,'email','incoming','manual',null,null,'2026-11-03T00:00:00Z','2026-11-03T01:00:00Z','TEST ONLY','received','support','','','hash');
   const read=async(cursor={})=>(await(await worker.fetch(new Request('https://example.invalid/api/admin/messages?'+new URLSearchParams({enquiry_id:sample.id,...cursor}),{headers:{Authorization:`Bearer ${env.ADMIN_TOKEN}`}}),env)).json());
   const first=await read(),second=await read(first.next);assert.equal(first.rows.length,100);assert.equal(second.rows.length,3);assert.equal(second.next,null);assert.equal(new Set([...first.rows,...second.rows].map(r=>r.id)).size,103);
  }finally{db.close()}
@@ -101,12 +101,36 @@ test('retention review uses latest recorded activity, excludes tests by default 
   assert.equal((await read('review=retention&review_before=2026-02-30')).status,400);
   let review=await(await read('review=retention&review_before=2026-11-03')).json();assert.equal(review.rows.length,0);assert.equal(review.automaticDeletion,false);assert.equal(review.retentionPeriod,'not_decided');
   review=await(await read('review=retention&review_before=2026-11-03&include_tests=true')).json();assert.equal(review.rows.length,1);assert.equal(review.rows[0].email,undefined);assert.equal(review.rows[0].message,undefined);
-  db.prepare('INSERT INTO owner_audit VALUES (?,?,?,?,?)').run(crypto.randomUUID(),sample.id,'2026-11-03T15:00:00.000Z','test',0);
+  db.prepare('INSERT INTO owner_audit (id,enquiry_id,changed_at,actor,previous_revision) VALUES (?,?,?,?,?)').run(crypto.randomUUID(),sample.id,'2026-11-03T15:00:00.000Z','test',0);
   review=await(await read('review=retention&review_before=2026-11-03&include_tests=true')).json();assert.equal(review.rows.length,0);
   const other={...sample,id:crypto.randomUUID()};await worker.fetch(req(other),env);
   const exported=await(await read('export=case&id='+sample.id)).json();assert.equal(exported.format,'via-nova-marketing-case-review');assert.equal(exported.tables[0].rows.length,1);assert.equal(exported.tables[0].rows[0].id,sample.id);assert.equal(exported.tables[0].rows[0].payload_hash,undefined);assert.equal(exported.tables[2].rows.length,1);
   assert.equal((await read('export=case&id='+crypto.randomUUID())).status,404);
   assert.equal(db.prepare('SELECT COUNT(*) n FROM enquiries').get().n,2);
   assert.equal((await worker.fetch(new Request('https://example.invalid/api/admin/enquiries?export=case&id='+sample.id),env)).status,401);
+ }finally{db.close()}
+});
+
+test('customer references are separate, stable on retry, and link only after explicit verified owner assignment',async()=>{
+ const {db,env}=setup();env.ADMIN_TOKEN='v'.repeat(64);const patch=body=>worker.fetch(new Request('https://example.invalid/api/admin/enquiries',{method:'PATCH',headers:{Authorization:`Bearer ${env.ADMIN_TOKEN}`},body:JSON.stringify(body)}),env);
+ try{await worker.fetch(req(),env);const first=db.prepare('SELECT customer_reference FROM enquiries WHERE id=?').get(sample.id).customer_reference;assert.match(first,/^VNM-C-[a-f0-9]{32}$/);
+  await worker.fetch(req(),env);assert.equal(db.prepare('SELECT customer_reference FROM enquiries WHERE id=?').get(sample.id).customer_reference,first);
+  const other={...sample,id:crypto.randomUUID()};await worker.fetch(req(other),env);const second=db.prepare('SELECT customer_reference FROM enquiries WHERE id=?').get(other.id).customer_reference;assert.notEqual(first,second);
+  const edit={id:other.id,revision:0,status:'Discussing',notes:'Verified same customer for synthetic test',due:'',customer_reference:first};
+  assert.equal((await patch(edit)).status,400);assert.equal((await patch({...edit,confirm_customer_link:true,customer_reference:'OTHER-C-'+first.slice(6)})).status,400);
+  assert.equal((await patch({...edit,confirm_customer_link:true})).status,200);
+  const audit=db.prepare('SELECT * FROM owner_audit WHERE enquiry_id=?').get(other.id);assert.equal(audit.previous_customer_reference,second);assert.equal(audit.next_customer_reference,first);
+  assert.equal((await patch({...edit,confirm_customer_link:true,customer_reference:second})).status,409);
+  assert.equal((await patch({...edit,revision:1,confirm_customer_link:true,customer_reference:second})).status,200);
+  assert.equal(db.prepare('SELECT COUNT(*) n FROM enquiries').get().n,2);assert.equal(db.prepare('SELECT message FROM enquiries WHERE id=?').get(sample.id).message,sample.message);
+ }finally{db.close()}
+});
+
+test('sender roles and protected attachment references persist as manual metadata without file transfer',async()=>{
+ const {db,env}=setup();env.ADMIN_TOKEN='t'.repeat(64);try{await worker.fetch(req(),env);
+ const body={id:crypto.randomUUID(),enquiry_id:sample.id,channel:'email',direction:'incoming',occurred_at:'2026-11-03T20:00:00.000Z',body:'TEST ONLY attachment reference',delivery_state:'received',workflow:'proposal',sender_role:'customer',attachment_reference:'PRIVATE-MAILBOX / TEST-ATTACHMENT-ID'};
+ const call=b=>worker.fetch(new Request('https://example.invalid/api/admin/messages',{method:'POST',headers:{Authorization:`Bearer ${env.ADMIN_TOKEN}`},body:JSON.stringify(b)}),env);
+ assert.equal((await call(body)).status,200);assert.equal((await call(body)).status,200);assert.equal((await call({...body,attachment_reference:'other'})).status,409);
+ const row=db.prepare('SELECT * FROM communication_messages').get();assert.equal(row.sender_role,'customer');assert.equal(row.attachment_reference,body.attachment_reference);assert.equal(row.source,'manual');assert.equal(db.prepare('SELECT count(*) n FROM communication_messages').get().n,1);
  }finally{db.close()}
 });

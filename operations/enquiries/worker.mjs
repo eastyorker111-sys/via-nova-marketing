@@ -49,7 +49,7 @@ export default {
    const now=new Date().toISOString();
    // Atomic batch: a saved enquiry always has an outbox row. A repeated ID never overwrites owner edits.
    await env.DB.batch([
-    env.DB.prepare('INSERT OR IGNORE INTO enquiries (id,payload_hash,received_at,form_kind,name,email,business,message,is_test) VALUES (?,?,?,?,?,?,?,?,?)').bind(input.id,hash,now,input.kind,input.name,input.email,input.business,input.message,input.isTest?1:0),
+    env.DB.prepare('INSERT OR IGNORE INTO enquiries (id,payload_hash,received_at,form_kind,name,email,business,message,is_test,customer_reference) VALUES (?,?,?,?,?,?,?,?,?,?)').bind(input.id,hash,now,input.kind,input.name,input.email,input.business,input.message,input.isTest?1:0,'VNM-C-'+crypto.randomUUID().replaceAll('-','')),
     env.DB.prepare('INSERT OR IGNORE INTO notification_outbox (enquiry_id) SELECT id FROM enquiries WHERE id=? AND payload_hash=?').bind(input.id,hash)
    ]);
    const row=await env.DB.prepare('SELECT payload_hash FROM enquiries WHERE id=?').bind(input.id).first();

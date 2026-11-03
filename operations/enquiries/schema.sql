@@ -13,14 +13,17 @@ CREATE TABLE IF NOT EXISTS enquiries (
  owner_notes TEXT NOT NULL DEFAULT '',
  follow_up_due TEXT,
  synced_at TEXT,
- revision INTEGER NOT NULL DEFAULT 0
+ revision INTEGER NOT NULL DEFAULT 0,
+ customer_reference TEXT NOT NULL DEFAULT ''
 );
 CREATE TABLE IF NOT EXISTS owner_audit (
  id TEXT PRIMARY KEY,
  enquiry_id TEXT NOT NULL REFERENCES enquiries(id),
  changed_at TEXT NOT NULL,
  actor TEXT NOT NULL,
- previous_revision INTEGER NOT NULL
+ previous_revision INTEGER NOT NULL,
+ previous_customer_reference TEXT NOT NULL DEFAULT '',
+ next_customer_reference TEXT NOT NULL DEFAULT ''
 );
 CREATE INDEX IF NOT EXISTS enquiries_received ON enquiries(received_at);
 CREATE TABLE IF NOT EXISTS notification_outbox (
@@ -47,6 +50,8 @@ CREATE TABLE IF NOT EXISTS communication_messages (
  project_reference TEXT NOT NULL DEFAULT '',
  invoice_reference TEXT NOT NULL DEFAULT '',
  payload_hash TEXT NOT NULL,
+ sender_role TEXT NOT NULL DEFAULT 'not_specified',
+ attachment_reference TEXT NOT NULL DEFAULT '',
  UNIQUE(channel,provider_message_id)
 );
 CREATE INDEX IF NOT EXISTS communication_enquiry ON communication_messages(enquiry_id,recorded_at,id);

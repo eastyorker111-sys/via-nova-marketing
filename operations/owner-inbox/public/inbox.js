@@ -22,17 +22,19 @@ function render(){
     const statusLabel=el('label','Stage ');statusLabel.append(status);
     const due=document.createElement('input');due.type='date';due.name='follow_up_due';due.value=r.follow_up_due||'';const dueLabel=el('label','Follow-up date ');dueLabel.append(due);cols.append(statusLabel,dueLabel);
     const notes=el('textarea','');notes.name='owner_notes';notes.autocomplete='off';notes.maxLength=5000;notes.value=r.owner_notes;const notesLabel=el('label','Owner notes and next action ');notesLabel.append(notes);
+    const customer=document.createElement('input');customer.name='customer_reference';customer.value=r.customer_reference||'';customer.autocomplete='off';const customerLabel=el('label','Customer reference (change only after verifying an existing Marketing customer) ');customerLabel.append(customer);
+    const confirmCustomer=document.createElement('input');confirmCustomer.type='checkbox';const confirmLabel=el('label','I verified this customer assignment, independently of name or phone matches ');confirmLabel.append(confirmCustomer);
     const button=el('button','Save owner fields');button.type='submit';const feedback=el('p','');feedback.setAttribute('role','status');feedback.tabIndex=-1;
     const discard=el('button','Discard unsaved changes');discard.type='button';
-    form.append(cols,notesLabel,button,discard,feedback);
-    const track=()=>{if(status.value!==r.owner_status||notes.value!==r.owner_notes||due.value!==(r.follow_up_due||''))dirty.add(r.id);else dirty.delete(r.id);};
+    form.append(cols,customerLabel,confirmLabel,notesLabel,button,discard,feedback);
+    const track=()=>{if(status.value!==r.owner_status||notes.value!==r.owner_notes||due.value!==(r.follow_up_due||'')||customer.value!==(r.customer_reference||''))dirty.add(r.id);else dirty.delete(r.id);};
     form.addEventListener('input',track);form.addEventListener('change',track);
-    discard.addEventListener('click',()=>{status.value=r.owner_status;notes.value=r.owner_notes;due.value=r.follow_up_due||'';dirty.delete(r.id);feedback.textContent='Unsaved changes discarded. Saved record unchanged.';});
-    form.addEventListener('submit',async e=>{e.preventDefault();saving.add(r.id);for(const control of [button,discard,status,due,notes])control.disabled=true;feedback.textContent='Saving…';try{
-      const response=await fetch('/api/enquiries',{method:'PATCH',credentials:'same-origin',headers:{'Content-Type':'application/json','X-VNM-Action':'owner-update'},body:JSON.stringify({id:r.id,revision:r.revision,status:status.value,due:due.value,notes:notes.value})});
+    discard.addEventListener('click',()=>{status.value=r.owner_status;notes.value=r.owner_notes;due.value=r.follow_up_due||'';customer.value=r.customer_reference||'';confirmCustomer.checked=false;dirty.delete(r.id);feedback.textContent='Unsaved changes discarded. Saved record unchanged.';});
+    form.addEventListener('submit',async e=>{e.preventDefault();saving.add(r.id);for(const control of [button,discard,status,due,notes,customer,confirmCustomer])control.disabled=true;feedback.textContent='Saving…';try{
+      const response=await fetch('/api/enquiries',{method:'PATCH',credentials:'same-origin',headers:{'Content-Type':'application/json','X-VNM-Action':'owner-update'},body:JSON.stringify({id:r.id,revision:r.revision,status:status.value,due:due.value,notes:notes.value,customer_reference:customer.value,confirm_customer_link:confirmCustomer.checked})});
       const result=await response.json();if(!response.ok)throw Error(result.error||'Save could not be confirmed');
-      r.revision=result.revision;r.owner_status=status.value;r.owner_notes=notes.value;r.follow_up_due=due.value;dirty.delete(r.id);feedback.textContent='Saved. Original submission unchanged.';
-    }catch(error){feedback.textContent=error.message;feedback.className='error';}finally{saving.delete(r.id);for(const control of [button,discard,status,due,notes])control.disabled=false;feedback.focus();}});
+      r.revision=result.revision;r.owner_status=status.value;r.owner_notes=notes.value;r.follow_up_due=due.value;r.customer_reference=customer.value;confirmCustomer.checked=false;dirty.delete(r.id);feedback.textContent='Saved. Original submission unchanged.';
+    }catch(error){feedback.textContent=error.message;feedback.className='error';}finally{saving.delete(r.id);for(const control of [button,discard,status,due,notes,customer,confirmCustomer])control.disabled=false;feedback.focus();}});
     card.append(form);
     const conversationButton=el('button','Open communication timeline');conversationButton.type='button';
     conversationButton.addEventListener('click',()=>{if(conversationButton.disabled)return;conversationButton.disabled=true;window.attachCommunication(card,r,{dirty,saving});});
