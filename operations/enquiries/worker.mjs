@@ -28,7 +28,7 @@ export default {
   if(url.pathname==='/api/admin/enquiries')return admin(request,env);
   if(url.pathname==='/api/notifications')return googleNotifications(request,env);
   const live=env.MODE==='production'&&env.OWNER_READY==='true'&&Boolean(env.INTAKE_PROXY_TOKEN)&&Boolean(env.ADMIN_TOKEN);
-  if(url.pathname==='/health'&&request.method==='GET')return response(200,{service:'via-nova-marketing-enquiries',mode:env.MODE||'staging',customerIntake:live,notifications:'private_inbox',emailAlerts:'not_configured'});
+  if(url.pathname==='/health'&&request.method==='GET')return response(200,{service:'via-nova-marketing-enquiries',mode:env.MODE||'staging',customerIntake:live,notifications:'private_inbox',emailAlerts:env.GOOGLE_NOTIFICATIONS_ENABLED==='true'?'google_owner_alerts':'not_configured'});
   // No customer records or admin operations are exposed over HTTP.
   if(url.pathname!=='/api/enquiries')return response(404,{error:'Not found'});
   if(request.method!=='POST')return response(405,{error:'Use POST'});
