@@ -17,7 +17,7 @@ test('short enquiry is primary while the detailed brief and provider fallback st
   for (const [key, page] of Object.entries(pages)) assert.match(layout(key,page), /class="button nav-cta" href="contact.html#enquiry-form"/);
   assert.match(pages.index.content, /Tell us what you need/);
   assert.match(pages.contact.content, /href="quote.html"/);
-  assert.match(pages.quote.content, /action="https:\/\/formspree.io\/f\/xqpaqedp" method="POST"/);
+  assert.match(pages.quote.content, /action="\/api\/enquiries" method="POST"/);
   assert.match(pages.quote.content, /name="Goals and audience" required/);
   assert.match(pages.quote.content, /data-question="Product stage"/);
   assert.match(pages.quote.content, /id="quote-fallback"/);

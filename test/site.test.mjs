@@ -20,14 +20,14 @@ for (const [key, page] of Object.entries(pages)) {
         assert.ok(destination, href);
         if (fragment) assert.ok(destination.content.includes(`id="${fragment}"`), href);
       }
-      else assert.ok(existsSync(`public/${href}`) || (href === 'assets/analytics.js' && existsSync(`dist/${href}`)), href);
+      else assert.ok(existsSync(`public/${href}`) || (['assets/analytics.js','assets/enquiry-client.js'].includes(href) && existsSync(`dist/${href}`)), href);
     }
   });
 }
 test('contact form and privacy preserve enquiry handling', () => {
-  assert.match(pages.contact.content, /action="https:\/\/formspree.io\/f\/xqpaqedp" method="POST"/);
+  assert.match(pages.contact.content, /action="\/api\/enquiries" method="POST"/);
   assert.match(pages.contact.content, /type="email" name="email"[^>]*required/);
-  assert.match(pages.privacy.content, /Formspree processes and stores submissions/);
+  assert.match(pages.privacy.content, /dedicated enquiry database on Cloudflare/);
 });
 
 test('search metadata uses valid business data and each page URL', () => {

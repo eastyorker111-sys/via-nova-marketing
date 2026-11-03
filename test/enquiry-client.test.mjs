@@ -22,3 +22,8 @@ test('only a matching durable receipt is success; simultaneous requests are bloc
   release({ok:true,stored:true,id:'different'});
   assert.equal((await first).state,'retry');
 });
+test('definite validation rejection permits corrected input without retaining an uncertain request',async()=>{
+ let attempt=0;const submit=createSubmission({newId:()=>String(++attempt),send:async p=>{if(p.message==='bad'){const error=Error('Correct your message');error.definite=true;throw error;}return {ok:true,stored:true,id:p.id};}});
+ assert.equal((await submit({message:'bad'})).state,'invalid');
+ assert.equal((await submit({message:'corrected'})).state,'saved');
+});

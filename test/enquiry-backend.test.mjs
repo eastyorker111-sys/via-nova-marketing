@@ -25,3 +25,14 @@ test('private review rejects strangers and preserves edits across stale updates'
   assert.equal(db.prepare('SELECT COUNT(*) n FROM owner_audit').get().n,1);
  }finally{db.close()}
 });
+test('production requires owner readiness and trusted proxy; client cannot label genuine records as tests',async()=>{
+ const {db,env}=setup();env.MODE='production';env.ADMIN_TOKEN='a'.repeat(64);env.INTAKE_PROXY_TOKEN='b'.repeat(64);
+ const body={...sample,email:'person@example.org',isTest:true};
+ const request=()=>{const r=req(body);r.headers.set('X-VNM-Proxy',env.INTAKE_PROXY_TOKEN);return r;};
+ try{
+  assert.equal((await worker.fetch(req(body),env)).status,403);
+  assert.equal((await worker.fetch(request(),env)).status,503);
+  env.OWNER_READY='true';assert.equal((await worker.fetch(request(),env)).status,200);
+  assert.equal(db.prepare('SELECT is_test FROM enquiries').get().is_test,0);
+ }finally{db.close();}
+});

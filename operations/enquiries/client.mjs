@@ -19,22 +19,25 @@ export function createSubmission({ send, newId = () => crypto.randomUUID() }) {
         : `Enquiry saved. Reference ${receipt.id}. This is not a confirmed project or booking.` };
       saved = { fingerprint, result }; pending = undefined;
       return result;
-    } catch {
+    } catch (error) {
+      if(error.definite){pending=undefined;return {state:'invalid',message:error.message};}
       return { state: 'retry', id: pending.id, message: `Storage could not be confirmed. Keep this page open and retry with the same details and reference ${pending.id}. You can also contact hello@vianovamarketing.ca and quote this reference.` };
     } finally { busy = false; }
   };
 }
 
 export function bindForm(form, { send, isTest = true, kind = 'quick', getMessage } = {}) {
-  const status = form.querySelector('[role="status"]');
+  const status = form.querySelector('[data-enquiry-status]');
   const button = form.querySelector('[type="submit"]');
   if (!status || !button || !send) throw new Error('A status area, submit button and verified transport are required');
   const submit = createSubmission({ send });
   const handler = async event => {
+    if (event.defaultPrevented) return;
     event.preventDefault();
     if (!form.reportValidity()) return;
     const values = new FormData(form);
-    const fields = { kind, isTest, name: String(values.get('name') || ''), email: String(values.get('email') || ''), business: String(values.get('business') || ''), website: String(values.get('_gotcha') || ''), message: getMessage ? getMessage(values) : String(values.get('message') || '') };
+    const fields = { kind, isTest, name: String(values.get('name') || ''), email: String(values.get('email') || ''), business: String(values.get('business') || values.get('Business') || ''), website: String(values.get('_gotcha') || ''), message: getMessage ? getMessage(values) : String(values.get('message') || '') };
+    if(fields.message.length>18000){status.textContent='Please shorten your brief before sending (maximum 18,000 characters). Your answers are still on this page.';status.focus();return;}
     button.disabled = true; status.textContent = 'Sending. Please wait.';
     const result = await submit(fields);
     status.textContent = result.message;
@@ -43,5 +46,6 @@ export function bindForm(form, { send, isTest = true, kind = 'quick', getMessage
     status.focus();
   };
   form.addEventListener('submit', handler);
+  button.disabled = false;
   return () => form.removeEventListener('submit', handler);
 }

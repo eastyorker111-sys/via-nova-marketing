@@ -1,4 +1,4 @@
-export const contactForm = `<form id="enquiry-form" action="https://formspree.io/f/xqpaqedp" method="POST" aria-describedby="enquiry-help">
+export const contactForm = `<form id="enquiry-form" action="/api/enquiries" method="POST" aria-describedby="enquiry-help">
 <h2 class="brief-heading">Start a conversation</h2>
 <p id="enquiry-help" class="brief-intro">Tell us what your business does and what you want to improve. Only your name, email and message are required.</p>
 <div class="field-pair"><label>Your name<input name="name" autocomplete="name" required maxlength="120"></label><label>Your email<input type="email" name="email" autocomplete="email" autocapitalize="off" spellcheck="false" required maxlength="254"></label></div>
@@ -7,7 +7,7 @@ export const contactForm = `<form id="enquiry-form" action="https://formspree.io
 <label>Your message<textarea name="message" required rows="5" maxlength="5000" placeholder="Tell us what you need and what you would like to achieve."></textarea></label>
 <div hidden><label>Leave this field empty<input name="_gotcha" tabindex="-1" autocomplete="off"></label></div>
 <input type="hidden" name="_subject" value="Via Nova Marketing — website enquiry">
-<p class="brief-intro">By sending, you ask us to respond to your enquiry. Formspree processes your submission and may ask you to complete a spam check. Please don’t include passwords or payment details. <a href="privacy.html">Privacy information</a>.</p>
-<button class="button" type="submit">Send enquiry <span aria-hidden="true">↗</span></button>
-<p class="form-status">After sending, you’ll see a confirmation page. If sending fails, return here or email <a href="mailto:hello@vianovamarketing.ca">hello@vianovamarketing.ca</a>.</p>
+<p class="brief-intro">By sending, you ask us to respond to your enquiry. Your request is saved in Via Nova Marketing’s dedicated enquiry system. Please don’t include passwords or payment details. <a href="privacy.html">Privacy information</a>.</p>
+<button class="button" type="submit" disabled>Send enquiry <span aria-hidden="true">↗</span></button>
+<noscript><p>Please enable JavaScript to use this form, or email us directly.</p></noscript><p class="form-status" data-enquiry-status role="status" tabindex="-1">After saving, your reference will appear here. If sending fails, keep this page open and retry or email <a href="mailto:hello@vianovamarketing.ca">hello@vianovamarketing.ca</a>.</p>
 </form>`;

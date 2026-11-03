@@ -11,3 +11,4 @@ await writeFile('dist/sitemap.xml', '<?xml version="1.0" encoding="UTF-8"?>\n<ur
 await writeFile('dist/404.html', layout('404', { title: 'Page not found', description: 'This page could not be found.', content: '<section class="page-intro container"><p class="eyebrow">404</p><h1>A different path.</h1><p>This page could not be found.</p><p><a class="button" href="/">Return to the homepage</a></p></section>' }).replace('content="index, follow"', 'content="noindex, follow"').replace(/(href|src)="(?!https?:|\/|#|mailto:|tel:)([^"]+)"/g, '$1="/$2"').replaceAll('srcset="assets/', 'srcset="/assets/').replaceAll(', assets/', ', /assets/'));
 
 await build({entryPoints:['src/analytics.mjs'], bundle:true, minify:true, platform:'browser', outfile:'dist/assets/analytics.js'});
+await build({entryPoints:['src/enquiry-client.mjs'], bundle:true, minify:true, platform:'browser', outfile:'dist/assets/enquiry-client.js'});
