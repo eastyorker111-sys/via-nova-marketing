@@ -94,3 +94,19 @@ test('message pagination retains equal timestamps without gaps or duplicate reco
   const first=await read(),second=await read(first.next);assert.equal(first.rows.length,100);assert.equal(second.rows.length,3);assert.equal(second.next,null);assert.equal(new Set([...first.rows,...second.rows].map(r=>r.id)).size,103);
  }finally{db.close()}
 });
+
+test('retention review uses latest recorded activity, excludes tests by default and never deletes; case export is isolated',async()=>{
+ const {db,env}=setup();env.ADMIN_TOKEN='r'.repeat(64);const read=q=>worker.fetch(new Request('https://example.invalid/api/admin/enquiries?'+q,{headers:{Authorization:`Bearer ${env.ADMIN_TOKEN}`}}),env);
+ try{await worker.fetch(req(),env);db.prepare('UPDATE enquiries SET received_at=?').run('2020-01-01T00:00:00.000Z');
+  assert.equal((await read('review=retention&review_before=2026-02-30')).status,400);
+  let review=await(await read('review=retention&review_before=2026-11-03')).json();assert.equal(review.rows.length,0);assert.equal(review.automaticDeletion,false);assert.equal(review.retentionPeriod,'not_decided');
+  review=await(await read('review=retention&review_before=2026-11-03&include_tests=true')).json();assert.equal(review.rows.length,1);assert.equal(review.rows[0].email,undefined);assert.equal(review.rows[0].message,undefined);
+  db.prepare('INSERT INTO owner_audit VALUES (?,?,?,?,?)').run(crypto.randomUUID(),sample.id,'2026-11-03T15:00:00.000Z','test',0);
+  review=await(await read('review=retention&review_before=2026-11-03&include_tests=true')).json();assert.equal(review.rows.length,0);
+  const other={...sample,id:crypto.randomUUID()};await worker.fetch(req(other),env);
+  const exported=await(await read('export=case&id='+sample.id)).json();assert.equal(exported.format,'via-nova-marketing-case-review');assert.equal(exported.tables[0].rows.length,1);assert.equal(exported.tables[0].rows[0].id,sample.id);assert.equal(exported.tables[0].rows[0].payload_hash,undefined);assert.equal(exported.tables[2].rows.length,1);
+  assert.equal((await read('export=case&id='+crypto.randomUUID())).status,404);
+  assert.equal(db.prepare('SELECT COUNT(*) n FROM enquiries').get().n,2);
+  assert.equal((await worker.fetch(new Request('https://example.invalid/api/admin/enquiries?export=case&id='+sample.id),env)).status,401);
+ }finally{db.close()}
+});

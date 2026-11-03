@@ -4,6 +4,9 @@ window.attachCommunication=(card,record,{dirty,saving})=>{
  const section=make('section'),heading=make('h3','Communication timeline'),status=make('p'),list=make('div');
  section.setAttribute('aria-label',`Communication for enquiry ${record.id}`);status.setAttribute('role','status');
  section.append(heading,make('p','Email and WhatsApp synchronization: pending access. Entries below are manual records, not proof of provider delivery. Recording does not send a message. WhatsApp uses one number shared by five businesses. Record here only after explicitly confirming Via Nova Marketing and this enquiry reference. Keep ambiguous messages unassigned for owner review in the shared channel; never infer the business from a phone number.'),status,list);card.append(section);
+ const emailHelp=make('details'),summary=make('summary','Find and record email replies');emailHelp.append(summary,make('p','The connected owner mailbox is east.yorker111@gmail.com. Confirm From/To, the Marketing business and this enquiry before recording an email. Internal alerts are not customer replies. This opens an external search and does not read or import mail.'));
+ const reference='[VNM:'+record.id+']',subject=make('input');subject.readOnly=true;subject.value=reference;const referenceLabel=make('label','Email subject reference ');referenceLabel.append(subject);emailHelp.append(referenceLabel);
+ const search=make('a','Search owner Gmail for this enquiry (opens a new tab)');search.href='https://mail.google.com/mail/u/?authuser=east.yorker111%40gmail.com#search/'+encodeURIComponent('"'+record.id+'"');search.target='_blank';search.rel='noopener noreferrer';emailHelp.append(search,make('p','Use the reference in an owner-reviewed email subject. For an existing reply, copy only necessary text, its exact Message-ID and thread reference into the manual form below. Use Incoming / Received for a reply, or Outgoing / Draft for unsent wording. No sender identity or delivery is verified by recording it.'));section.append(emailHelp);
  const reload=make('button','Refresh timeline'),older=make('button','Load older messages');reload.type=older.type='button';older.hidden=true;section.append(reload,older);
  let cursor=null,reading=false;
  const states={received:'Received — owner recorded',draft:'Draft — not sent',recorded_sent:'Sent elsewhere — owner reported',failed:'Failed elsewhere — owner reported'};
@@ -18,7 +21,7 @@ window.attachCommunication=(card,record,{dirty,saving})=>{
  }
  reload.addEventListener('click',()=>read());older.addEventListener('click',()=>read(true));
  const form=make('form');form.setAttribute('aria-label',`Record communication for ${record.id}`);const controls={};
- function field(name,label,options){const input=make(options?'select':name==='body'?'textarea':'input');input.name=name;
+ function field(name,label,options){const input=make(options?'select':name==='body'?'textarea':'input');input.name=name;input.autocomplete='off';
   if(options)for(const [value,text] of options){const option=make('option',text);option.value=value;input.append(option);}else{input.type=name==='occurred_at'?'datetime-local':'text';input.maxLength=name==='body'?5000:name.startsWith('provider_')?300:120;}
   const wrapper=make('label',label+' ');wrapper.append(input);form.append(wrapper);controls[name]=input;return input;
  }

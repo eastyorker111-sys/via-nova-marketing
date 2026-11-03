@@ -1,3 +1,4 @@
+import {retention} from './retention.mjs';
 import {communications} from './communications.mjs';
 const json = (status, body) => new Response(JSON.stringify(body), {status, headers:{'Content-Type':'application/json','Cache-Control':'no-store','X-Content-Type-Options':'nosniff'}});
 export async function admin(request, env) {
@@ -11,6 +12,7 @@ export async function admin(request, env) {
     if(new URL(request.url).pathname==='/api/admin/messages')return await communications(request,env);
     if(request.method==='GET') {
       const params=new URL(request.url).searchParams;
+      if(params.get('review')==='retention'||params.get('export')==='case')return await retention(params,env);
       if(params.get('export')==='backup'){
         // D1 batch is a transaction: the backup must not mix owner revisions.
         const tables=['enquiries','notification_outbox','owner_audit','communication_messages'];

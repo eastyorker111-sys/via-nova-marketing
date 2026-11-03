@@ -13,14 +13,15 @@ function render(){
   const visible=rows.filter(r=>$('tests').checked||!r.is_test);
   if(!visible.length)$('records').append(el('p','No matching records loaded. Refresh to check for new enquiries.'));
   for(const r of visible){
-    const card=el('article','');card.append(el('h2',(r.is_test?'TEST · ':'')+r.name));card.append(el('p',`${r.id} · ${r.received_at} · ${r.form_kind} · ${r.email}`,'meta'));
+    const card=el('article','');card.id='enquiry-'+r.id;const title=el('h2',(r.is_test?'TEST · ':'')+r.name);title.id='heading-'+r.id;card.setAttribute('aria-labelledby',title.id);card.append(title);card.append(el('p',`${r.id} · ${r.received_at} · ${r.form_kind} · ${r.email}`,'meta'));
     if(r.business)card.append(el('p',r.business));card.append(el('p',r.message,'message'));
     card.append(el('p',`Marketing permission: ${r.marketing_consent}. Email alert: ${r.notification_state||'unknown'}.`,'meta'));
     const form=el('form',''),cols=el('div','','columns'),status=el('select','');
+    form.setAttribute('aria-label','Owner fields for enquiry '+r.id);status.name='status';
     for(const value of ['New','Discussing','Quoted','Won','Lost','On hold','Spam','Closed']){const option=el('option',value);option.value=value;status.append(option);}status.value=r.owner_status;
     const statusLabel=el('label','Stage ');statusLabel.append(status);
-    const due=document.createElement('input');due.type='date';due.value=r.follow_up_due||'';const dueLabel=el('label','Follow-up date ');dueLabel.append(due);cols.append(statusLabel,dueLabel);
-    const notes=el('textarea','');notes.maxLength=5000;notes.value=r.owner_notes;const notesLabel=el('label','Owner notes and next action ');notesLabel.append(notes);
+    const due=document.createElement('input');due.type='date';due.name='follow_up_due';due.value=r.follow_up_due||'';const dueLabel=el('label','Follow-up date ');dueLabel.append(due);cols.append(statusLabel,dueLabel);
+    const notes=el('textarea','');notes.name='owner_notes';notes.autocomplete='off';notes.maxLength=5000;notes.value=r.owner_notes;const notesLabel=el('label','Owner notes and next action ');notesLabel.append(notes);
     const button=el('button','Save owner fields');button.type='submit';const feedback=el('p','');feedback.setAttribute('role','status');feedback.tabIndex=-1;
     const discard=el('button','Discard unsaved changes');discard.type='button';
     form.append(cols,notesLabel,button,discard,feedback);
