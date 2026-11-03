@@ -2,6 +2,7 @@
 const $=id=>document.getElementById(id),tabs=[...document.querySelectorAll('[role="tab"]')];
 function select(tab,focus=false){for(const t of tabs){const active=t===tab;t.setAttribute('aria-selected',String(active));t.tabIndex=active?0:-1;$(t.dataset.tab).hidden=!active;}if(focus)tab.focus();history.replaceState(null,'','#'+tab.dataset.tab);}
 tabs.forEach((tab,index)=>{tab.addEventListener('click',()=>select(tab));tab.addEventListener('keydown',e=>{let i;if(['ArrowRight','ArrowDown'].includes(e.key))i=(index+1)%tabs.length;if(['ArrowLeft','ArrowUp'].includes(e.key))i=(index+tabs.length-1)%tabs.length;if(e.key==='Home')i=0;if(e.key==='End')i=tabs.length-1;if(i!==undefined){e.preventDefault();select(tabs[i],true);}});});
+document.querySelectorAll('[data-open-tab]').forEach(button=>button.addEventListener('click',()=>{const tab=tabs.find(t=>t.dataset.tab===button.dataset.openTab);if(tab)select(tab,true);}));
 const selected=tabs.find(t=>'#'+t.dataset.tab===location.hash);if(selected)select(selected);
 const hosted=location.protocol==='https:';
 if(!hosted){document.querySelector('[data-inbox]').href='https://via-nova-marketing-owner-inbox.vercel.app/';$('refresh-live').disabled=true;$('live-state').textContent='Local launcher: open the authenticated hub to refresh live data. No customer data is loaded here.';}
