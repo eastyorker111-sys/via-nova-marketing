@@ -12,6 +12,8 @@ export default async function handler(req,res) {
   try{
     const url=new URL('/api/admin/enquiries',process.env.ENQUIRY_BACKEND_URL);
     if(req.query?.before)url.searchParams.set('before',String(req.query.before));
+    if(req.query?.before_id)url.searchParams.set('before_id',String(req.query.before_id));
+    if(req.query?.export==='backup')url.searchParams.set('export','backup');
     const body=req.method==='PATCH'?JSON.stringify(req.body):undefined;
     if(body&&body.length>12000)return fail(413,'Notes are too long');
     const r=await fetch(url,{method:req.method,redirect:'error',signal:AbortSignal.timeout(15000),headers:{Authorization:`Bearer ${process.env.ENQUIRY_ADMIN_TOKEN}`,'Content-Type':'application/json'},body});

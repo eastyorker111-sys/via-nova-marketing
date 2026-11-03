@@ -1,4 +1,4 @@
-// Prepared for the replacement route; deliberately not loaded by the public site.
+// Shared native form client used by the public site.
 // Keep the request in memory only: customer text must not enter browser storage.
 export function createSubmission({ send, newId = () => crypto.randomUUID() }) {
   let pending, saved, busy = false;
@@ -23,6 +23,15 @@ export function createSubmission({ send, newId = () => crypto.randomUUID() }) {
       if(error.definite){pending=undefined;return {state:'invalid',message:error.message};}
       return { state: 'retry', id: pending.id, message: `Storage could not be confirmed. Keep this page open and retry with the same details and reference ${pending.id}. You can also contact hello@vianovamarketing.ca and quote this reference.` };
     } finally { busy = false; }
+  };
+}
+
+export function createReceiptReporter(notify) {
+  const seen=new Set();
+  return (payload,receipt)=>{
+    if(receipt.ok&&receipt.stored&&receipt.id===payload.id&&!receipt.isTest&&['quick','brief'].includes(payload.kind)&&!seen.has(receipt.id)){
+      seen.add(receipt.id);notify({kind:payload.kind});
+    }
   };
 }
 

@@ -1,4 +1,5 @@
 import {admin} from './admin.mjs';
+import {googleNotifications} from './google-notifications.mjs';
 const origin='https://vianovamarketing.ca';
 const maxBytes=24576;
 const response=(status,body)=>new Response(JSON.stringify(body),{status,headers:{'Content-Type':'application/json','Cache-Control':'no-store','X-Content-Type-Options':'nosniff'}});
@@ -25,6 +26,7 @@ export default {
  async fetch(request,env){
   const url=new URL(request.url);
   if(url.pathname==='/api/admin/enquiries')return admin(request,env);
+  if(url.pathname==='/api/notifications')return googleNotifications(request,env);
   const live=env.MODE==='production'&&env.OWNER_READY==='true'&&Boolean(env.INTAKE_PROXY_TOKEN)&&Boolean(env.ADMIN_TOKEN);
   if(url.pathname==='/health'&&request.method==='GET')return response(200,{service:'via-nova-marketing-enquiries',mode:env.MODE||'staging',customerIntake:live,notifications:'private_inbox',emailAlerts:'not_configured'});
   // No customer records or admin operations are exposed over HTTP.

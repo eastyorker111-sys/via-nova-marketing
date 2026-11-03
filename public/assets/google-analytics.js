@@ -1,7 +1,7 @@
 (() => {
   const measurementId = 'G-LYCLD92MGB';
   const storageKey = 'via-nova-analytics-choice';
-  const paths = new Set(['/', '/index.html', '/services.html', '/about.html', '/work.html', '/contact.html', '/privacy.html']);
+  const paths = new Set(['/', '/index.html', '/services.html', '/about.html', '/work.html', '/contact.html', '/quote.html', '/privacy.html']);
   const panel = document.querySelector('#analytics-choice');
   const settings = document.querySelector('#analytics-settings');
   if (!panel || !settings) return;
@@ -27,7 +27,12 @@
     gtag('js', new Date());
     let referrer = '';
     try { referrer = document.referrer ? new URL(document.referrer).origin : ''; } catch {}
+    // Only known business labels enter analytics. Unknown URL text is discarded.
+    const labels={source:['linkedin','instagram','facebook','google_business_profile','whatsapp','newsletter'],medium:['organic_social','referral','email','cpc'],name:['2026_11_service_intro','planning_intro','website_enquiries','brand_clarity'],content:['profile_link','service_post','video','newsletter_link']};
+    const params=new URL(location.origin+location.pathname+(location.search||'')).searchParams,campaign={};
+    for(const [key,allowed]of Object.entries(labels)){const value=params.get(key==='name'?'utm_campaign':'utm_'+key);if(allowed.includes(value))campaign['campaign_'+key]=value;}
     gtag('config', measurementId, {
+      ...campaign,
       page_location: `${location.origin}${location.pathname}`,
       page_referrer: referrer,
       allow_google_signals: false,
@@ -82,5 +87,16 @@
     const method = href.startsWith('tel:') ? 'phone' : href.startsWith('mailto:') ? 'email' : href.startsWith('https://wa.me/14372376895') ? 'whatsapp' : '';
     if (method) gtag('event', 'contact_click', { contact_method: method });
     if (href === 'quote.html' || href === '/quote.html') gtag('event', 'project_request_click', { entry_point: location.pathname });
+  });
+  const starts=new Set();
+  document.addEventListener('input',event=>{
+    if(!enabled)return;
+    const form=event.target.closest('form');
+    const kind=form?.id==='enquiry-form'?'quick':form?.id==='quote-form'?'brief':'';
+    if(kind&&!starts.has(kind)){starts.add(kind);gtag('event','enquiry_start',{form_kind:kind});}
+  });
+  document.addEventListener('vnm:enquiry-saved',event=>{
+    if(!enabled||!['quick','brief'].includes(event.detail?.kind))return;
+    gtag('event','enquiry_submitted',{form_kind:event.detail.kind});
   });
 })();

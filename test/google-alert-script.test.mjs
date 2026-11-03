@@ -1,0 +1,11 @@
+import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';import vm from 'node:vm';
+const source=fs.readFileSync(new URL('../operations/google-alerts/Code.gs',import.meta.url),'utf8');
+function setup({sendFails=false,ackFails=false}={}){
+ const row={id:'00000000-0000-4000-8000-000000000001',state:'pending_configuration',received_at:'2026-11-03T12:00:00Z'},props=new Map(),sent=[];let acknowledgedFailure=ackFails;
+ const c={ScriptApp:{getIdentityToken:()=> 'token'},Utilities:{getUuid:()=> '00000000-0000-4000-8000-000000000002'},LockService:{getScriptLock:()=>({tryLock:()=>true,releaseLock(){}})},PropertiesService:{getScriptProperties:()=>({getProperty:k=>props.get(k),setProperty:(k,v)=>props.set(k,v),deleteProperty:k=>props.delete(k)})},MailApp:{getRemainingDailyQuota:()=>100,sendEmail:m=>{sent.push(m);if(sendFails)throw Error('uncertain');}},UrlFetchApp:{fetch:(url,options)=>{
+ let result;if(options.method==='get')result={items:['pending_configuration','sending'].includes(row.state)?[row]:[]};else{const p=JSON.parse(options.payload);if(p.action==='claim'){const claimed=row.state==='pending_configuration';if(claimed){row.state='sending';row.attempt=p.attempt;}result={claimed};}else if(p.action==='sent'){if(acknowledgedFailure){acknowledgedFailure=false;throw Error('lost acknowledgement');}row.state='sent';result={updated:true};}else{row.state='needs_review';result={updated:true};}}
+ return{getResponseCode:()=>200,getContentText:()=>JSON.stringify(result)};
+ }},console:{log(){}}};vm.runInNewContext(source,c);return{c,row,sent};
+}
+test('Google alert uses fixed owner, no customer contents and retry only acknowledges accepted email',()=>{const {c,row,sent}=setup({ackFails:true});assert.throws(()=>c.sendPendingAlerts());assert.equal(sent.length,1);c.sendPendingAlerts();assert.equal(sent.length,1);assert.equal(row.state,'sent');assert.equal(sent[0].to,'east.yorker111@gmail.com');assert.match(sent[0].body,/private inbox/);});
+test('uncertain Google sending is retained for review and never blindly retried',()=>{const {c,row,sent}=setup({sendFails:true});assert.throws(()=>c.sendPendingAlerts());assert.equal(row.state,'needs_review');c.sendPendingAlerts();assert.equal(sent.length,1);});

@@ -4,7 +4,7 @@ import { readFileSync } from 'node:fs';
 import { runInNewContext } from 'node:vm';
 
 const source = readFileSync(new URL('../public/assets/google-analytics.js', import.meta.url), 'utf8');
-function setup({ choice, dnt = '0', gpc = false, host = 'vianovamarketing.ca' } = {}) {
+function setup({ choice, dnt = '0', gpc = false, host = 'vianovamarketing.ca', search='?secret=private', pathname='/contact.html' } = {}) {
   const handlers = {};
   const element = key => ({ hidden: false, focus() {}, addEventListener: (_, fn) => handlers[key] = fn });
   const accept = element('accept'), decline = element('decline'), settings = element('settings');
@@ -18,7 +18,7 @@ function setup({ choice, dnt = '0', gpc = false, host = 'vianovamarketing.ca' } 
   };
   let stored = choice ? JSON.stringify({ value: choice, expires: Date.now() + 100000 }) : null;
   const window = {};
-  runInNewContext(source, { document, window, navigator: { doNotTrack: dnt, globalPrivacyControl: gpc }, location: { hostname: host, origin: `https://${host}`, pathname: '/contact.html', search: '?secret=private', hash: '#secret', reload() {} }, localStorage: { getItem: () => stored, setItem: (_, value) => stored = value }, URL, Date, Set });
+  runInNewContext(source, { document, window, navigator: { doNotTrack: dnt, globalPrivacyControl: gpc }, location: { hostname: host, origin: `https://${host}`, pathname, search, hash: '#secret', reload() {} }, localStorage: { getItem: () => stored, setItem: (_, value) => stored = value }, URL, Date, Set });
   return { scripts, handlers, panel, window, events, document };
 }
 test('Google tag is blocked until acceptance and when declined', () => {
@@ -28,6 +28,19 @@ test('Google tag is blocked until acceptance and when declined', () => {
   first.handlers.decline();
   assert.equal(first.scripts.length, 0);
   assert.equal(setup({ choice: 'denied' }).scripts.length, 0);
+});
+
+test('known campaign labels are measured after consent without raw URL or unknown text',()=>{
+ const page=setup({choice:'granted',search:'?utm_source=linkedin&utm_medium=organic_social&utm_campaign=2026_11_service_intro&utm_content=private_person&email=private@example.com'});
+ const config=page.window.dataLayer.find(r=>r[0]==='config')[2];assert.equal(config.campaign_source,'linkedin');assert.equal(config.campaign_name,'2026_11_service_intro');assert.equal(config.campaign_content,undefined);assert.ok(!JSON.stringify(config).includes('private'));
+ assert.equal(setup({search:'?utm_source=linkedin'}).scripts.length,0);
+});
+test('start and confirmed receipt events respect consent and contain only form kind',()=>{
+ const p=setup({pathname:'/quote.html'});const input={target:{closest:()=>({id:'quote-form'})}};
+ p.events.input(input);p.events['vnm:enquiry-saved']({detail:{kind:'brief'}});assert.equal(p.window.dataLayer.filter(r=>r[0]==='event').length,0);
+ p.handlers.accept();p.events.input(input);p.events.input(input);p.events['vnm:enquiry-saved']({detail:{kind:'brief',email:'private'}});
+ const events=p.window.dataLayer.filter(r=>r[0]==='event');assert.equal(events.length,2);assert.equal(events[0][1],'enquiry_start');assert.equal(events[1][1],'enquiry_submitted');assert.deepEqual(Object.keys(events[1][2]),['form_kind']);
+ p.handlers.decline();p.events['vnm:enquiry-saved']({detail:{kind:'brief'}});assert.equal(p.window.dataLayer.filter(r=>r[0]==='event').length,2);
 });
 test('acceptance loads once, sends clean URL and only contact method', () => {
   const page = setup();

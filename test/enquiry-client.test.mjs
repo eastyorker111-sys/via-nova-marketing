@@ -1,6 +1,12 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {createSubmission} from '../operations/enquiries/client.mjs';
+import {createSubmission,createReceiptReporter} from '../operations/enquiries/client.mjs';
+
+test('confirmed receipt reporting excludes tests, failures, mismatches and duplicates without customer fields',()=>{
+ const events=[],report=createReceiptReporter(e=>events.push(e)),payload={id:'receipt-id',kind:'quick',email:'private@example.com'},good={ok:true,stored:true,id:'receipt-id',isTest:false};
+ report(payload,{...good,isTest:true});report(payload,{...good,stored:false});report(payload,{...good,id:'different'});assert.equal(events.length,0);
+ report(payload,good);report(payload,good);assert.deepEqual(events,[{kind:'quick'}]);
+});
 
 test('ambiguous transport retry reuses ID; double click and receipt replay do not duplicate', async () => {
   const ids=[]; let attempt=0;

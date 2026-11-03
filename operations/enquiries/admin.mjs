@@ -8,11 +8,20 @@ export async function admin(request, env) {
   if(mismatch) return json(401,{error:'Authentication required'});
   try {
     if(request.method==='GET') {
-      const cursor=new URL(request.url).searchParams.get('before') || '9999';
-      if(cursor.length>80)return json(400,{error:'Invalid cursor'});
-      const data=await env.DB.prepare(`SELECT e.id,e.received_at,e.form_kind,e.name,e.email,e.business,e.message,e.is_test,e.marketing_consent,e.owner_status,e.owner_notes,e.follow_up_due,e.revision,n.state AS notification_state,n.attempts FROM enquiries e LEFT JOIN notification_outbox n ON n.enquiry_id=e.id WHERE e.received_at < ? ORDER BY e.received_at DESC,e.id DESC LIMIT 101`).bind(cursor).all();
+      const params=new URL(request.url).searchParams;
+      if(params.get('export')==='backup'){
+        // D1 batch is a transaction: the backup must not mix owner revisions.
+        const tables=['enquiries','notification_outbox','owner_audit'];
+        const data=await env.DB.batch(tables.map(table=>env.DB.prepare(`SELECT * FROM ${table} ORDER BY ${table==='notification_outbox'?'enquiry_id':'id'} LIMIT 1001`).bind()));
+        if(data.some(t=>t.results.length>1000))return json(413,{error:'This backup exceeds the in-app limit. Use the authorized full D1 export; no partial backup was returned.'});
+        return json(200,{format:'via-nova-marketing-backup',version:1,exportedAt:new Date().toISOString(),source:'via-nova-marketing-enquiries',tables:tables.map((table,i)=>({table,rows:data[i].results}))});
+      }
+      const cursor=params.get('before') || '9999',cursorId=params.get('before_id')||'ffffffff-ffff-ffff-ffff-ffffffffffff';
+      if(cursor.length>80||!/^[\da-f-]{36}$/i.test(cursorId))return json(400,{error:'Invalid cursor'});
+      const data=await env.DB.prepare(`SELECT e.id,e.received_at,e.form_kind,e.name,e.email,e.business,e.message,e.is_test,e.marketing_consent,e.owner_status,e.owner_notes,e.follow_up_due,e.revision,n.state AS notification_state,n.attempts FROM enquiries e LEFT JOIN notification_outbox n ON n.enquiry_id=e.id WHERE (e.received_at < ? OR (e.received_at = ? AND e.id < ?)) ORDER BY e.received_at DESC,e.id DESC LIMIT 101`).bind(cursor,cursor,cursorId).all();
       const rows=data.results || [];
-      return json(200,{rows:rows.slice(0,100),more:rows.length>100,refreshedAt:new Date().toISOString(),source:'Via Nova Marketing dedicated database',mode:env.MODE||'staging'});
+      const last=rows[Math.min(99,rows.length-1)];
+      return json(200,{rows:rows.slice(0,100),more:rows.length>100,next:rows.length>100?{before:last.received_at,before_id:last.id}:null,refreshedAt:new Date().toISOString(),source:'Via Nova Marketing dedicated database',mode:env.MODE||'staging'});
     }
     if(request.method!=='PATCH')return json(405,{error:'Method not allowed'});
     const raw=await request.text();if(raw.length>12000)return json(413,{error:'Update too large'});

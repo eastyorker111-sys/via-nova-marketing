@@ -1,5 +1,5 @@
 const $=id=>document.getElementById(id), el=(tag,text,cls)=>{const n=document.createElement(tag);n.textContent=text;if(cls)n.className=cls;return n;};
-let rows=[],loading=false;
+let rows=[],loading=false,next=null;
 function render(){
   $('records').replaceChildren();const live=rows.filter(r=>!r.is_test);
   $('count').textContent=live.length;$('new').textContent=live.filter(r=>r.owner_status==='New').length;$('alerts').textContent=live.filter(r=>r.notification_state!=='sent').length;
@@ -23,5 +23,21 @@ function render(){
     card.append(form);$('records').append(card);
   }
 }
-async function refresh(){if(loading)return;loading=true;$('refresh').disabled=true;$('connection').textContent='Refreshing…';try{const response=await fetch('/api/enquiries',{credentials:'same-origin',cache:'no-store'});const data=await response.json();if(!response.ok)throw Error(data.error||'Request failed');rows=data.rows;$('connection').textContent=`${data.source} · ${data.mode} · refreshed ${new Date(data.refreshedAt).toLocaleString()}`;$('more').textContent=data.more?'Showing the newest 100 records. Older records remain in the store; request an authorized export.':'';render();}catch{$('connection').textContent='Refresh failed. Displayed records, if any, may be old. Sign in again or retry; no data was deleted.';}finally{loading=false;$('refresh').disabled=false;}}
-$('refresh').addEventListener('click',refresh);$('tests').addEventListener('change',render);refresh();
+async function refresh(older=false){
+ if(loading)return;loading=true;$('refresh').disabled=true;$('load-older').disabled=true;$('connection').textContent='Refreshing…';
+ try{
+  const query=older&&next?'?'+new URLSearchParams(next):'';
+  const response=await fetch('/api/enquiries'+query,{credentials:'same-origin',cache:'no-store'});const data=await response.json();if(!response.ok)throw Error(data.error||'Request failed');
+  rows=older?[...new Map([...rows,...data.rows].map(r=>[r.id,r])).values()]:data.rows;next=data.next;
+  $('connection').textContent=`${data.source} · ${data.mode} · refreshed ${new Date(data.refreshedAt).toLocaleString()}`;
+  $('more').textContent=data.more?`${rows.length} records loaded. More records are available.`:`All ${rows.length} records loaded.`;$('load-older').hidden=!data.more;render();
+ }catch{$('connection').textContent='Refresh failed. Displayed records, if any, may be old. Sign in again or retry; no data was deleted.';}
+ finally{loading=false;$('refresh').disabled=false;$('load-older').disabled=false;}
+}
+$('refresh').addEventListener('click',()=>refresh());$('load-older').addEventListener('click',()=>refresh(true));$('tests').addEventListener('change',render);
+$('download-backup').addEventListener('click',async()=>{
+ const button=$('download-backup'),status=$('backup-state');button.disabled=true;status.textContent='Preparing a consistent private snapshot…';
+ try{const response=await fetch('/api/enquiries?export=backup',{credentials:'same-origin',cache:'no-store'});const data=await response.json();if(!response.ok)throw Error(data.error||'Backup failed');if(data.format!=='via-nova-marketing-backup'||!Array.isArray(data.tables))throw Error('Invalid backup response');
+ const url=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json'}));const a=document.createElement('a');a.href=url;a.download='via-nova-marketing-backup-'+data.exportedAt.replace(/[:.]/g,'-')+'.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);status.textContent='Backup download started. Keep it private and confirm the file was saved. '+data.tables.map(t=>t.table+': '+t.rows.length).join('; ');
+ }catch(error){status.textContent=error.message+' No partial backup was offered.';}finally{button.disabled=false;}
+});refresh();
