@@ -3,7 +3,7 @@ window.attachCommunication=(card,record,{dirty,saving})=>{
  const make=(tag,text='')=>{const n=document.createElement(tag);n.textContent=text;return n;};
  const section=make('section'),heading=make('h3','Communication timeline'),status=make('p'),list=make('div');
  section.setAttribute('aria-label',`Communication for enquiry ${record.id}`);status.setAttribute('role','status');
- section.append(heading,make('p','Email and WhatsApp synchronization: pending access. Entries below are manual records, not proof of provider delivery. Recording does not send a message.'),status,list);card.append(section);
+ section.append(heading,make('p','Email and WhatsApp synchronization: pending access. Entries below are manual records, not proof of provider delivery. Recording does not send a message. WhatsApp uses one number shared by five businesses. Record here only after explicitly confirming Via Nova Marketing and this enquiry reference. Keep ambiguous messages unassigned for owner review in the shared channel; never infer the business from a phone number.'),status,list);card.append(section);
  const reload=make('button','Refresh timeline'),older=make('button','Load older messages');reload.type=older.type='button';older.hidden=true;section.append(reload,older);
  let cursor=null,reading=false;
  const states={received:'Received — owner recorded',draft:'Draft — not sent',recorded_sent:'Sent elsewhere — owner reported',failed:'Failed elsewhere — owner reported'};
