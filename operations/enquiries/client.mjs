@@ -15,7 +15,7 @@ export function createSubmission({ send, newId = () => crypto.randomUUID() }) {
       const receipt = await send({ ...fields, id: pending.id });
       if (!receipt.ok || !receipt.stored || receipt.id !== pending.id) throw new Error('No matching receipt');
       const result = { state: 'saved', id: receipt.id, message: receipt.isTest
-        ? `TEST saved. Reference ${receipt.id}. Notification delivery is not configured. No work is booked.`
+        ? `TEST saved. Reference ${receipt.id}. Synthetic tests are excluded from automatic email alerts. No work is booked.`
         : `Enquiry saved. Reference ${receipt.id}. This is not a confirmed project or booking.` };
       saved = { fingerprint, result }; pending = undefined;
       return result;

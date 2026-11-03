@@ -16,7 +16,7 @@ test('ambiguous transport retry reuses ID; double click and receipt replay do no
   assert.equal((await submit({...input,message:'changed'})).state,'uncertain');
   const result=await submit(input);
   assert.equal(result.state,'saved');
-  assert.match(result.message,/Notification delivery is not configured/);
+  assert.match(result.message,/Synthetic tests are excluded from automatic email alerts/);
   assert.deepEqual(await submit(input),result);
   assert.deepEqual(ids,['test-reference','test-reference']);
 });
