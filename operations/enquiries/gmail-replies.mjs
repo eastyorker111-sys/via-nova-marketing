@@ -1,5 +1,5 @@
-// Disabled, server-side adapter. No HTTP route, credentials, Gmail grants or schedule.
-// A future authorized reader supplies full Gmail messages; originals stay in Gmail.
+// Server-side adapter behind the disabled-by-default private reply review route.
+// The authorized reader supplies full Gmail messages; originals stay in Gmail.
 import {recordCommunication} from './communications.mjs';
 import {pendingReply,finishPending,gmailKey,gmailEnabled,validGmailId} from './gmail-pending.mjs';
 const reference=/\[VNM:([0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12})\]/gi;
