@@ -1,0 +1,5 @@
+import {readFileSync} from 'node:fs';
+import {analyticsChoice} from './analytics-choice.mjs';
+import {searchMetadata} from './seo.mjs';
+const content=readFileSync(new URL('./cinematic-home.html',import.meta.url),'utf8');
+export function cinematicHome(page){return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>${page.title} — Via Nova Marketing</title><meta name="description" content="${page.description}"><meta name="theme-color" content="#0B2D45"><meta name="robots" content="index, follow"><link rel="canonical" href="https://vianovamarketing.ca/"><meta property="og:title" content="${page.title} — Via Nova Marketing">${searchMetadata('index',page)}<link rel="icon" href="assets/monogram-adobe.png"><link rel="stylesheet" href="assets/cinematic.css"><script src="assets/cinematic.js" defer></script><script src="assets/google-analytics.js" defer></script></head><body>${content}${analyticsChoice}</body></html>`;}

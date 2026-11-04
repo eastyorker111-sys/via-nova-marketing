@@ -5,7 +5,7 @@ import { pages, layout } from '../src/pages.mjs';
 for (const [key, page] of Object.entries(pages)) {
   test(`${key}: landmark, single heading, valid internal destinations`, () => {
     const html = layout(key, page);
-    assert.equal((html.match(/<h1>/g) || []).length, 1);
+    assert.equal((html.match(/<h1(?:\s[^>]*)?>/g) || []).length, 1);
     assert.ok(html.includes('<main id="main">'));
     assert.ok(html.includes('name="viewport"'));
     assert.ok(html.includes('index, follow'));
@@ -20,7 +20,7 @@ for (const [key, page] of Object.entries(pages)) {
         assert.ok(destination, href);
         if (fragment) assert.ok(destination.content.includes(`id="${fragment}"`), href);
       }
-      else assert.ok(existsSync(`public/${href}`) || (['assets/analytics.js','assets/enquiry-client.js'].includes(href) && existsSync(`dist/${href}`)), href);
+      else assert.ok(existsSync(`public/${href}`) || (['assets/analytics.js','assets/enquiry-client.js','assets/cinematic.js'].includes(href) && existsSync(`dist/${href}`)), href);
     }
   });
 }

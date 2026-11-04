@@ -14,8 +14,11 @@ test('email brief groups multiple services, preserves text and excludes provider
   assert.equal(briefSummary(entries), 'Services:\nBrand, Website\n\nGoals:\n<script>plain text</script>');
 });
 test('short enquiry is primary while the detailed brief and provider fallback stay available', () => {
-  for (const [key, page] of Object.entries(pages)) assert.match(layout(key,page), /class="button nav-cta" href="contact.html#enquiry-form"/);
-  assert.match(pages.index.content, /Tell us what you need/);
+  for (const [key, page] of Object.entries(pages)) {
+    if(key==='index') assert.match(layout(key,page), /id="contact">Start a conversation<\/button>/);
+    else assert.match(layout(key,page), /class="button nav-cta" href="contact.html#enquiry-form"/);
+  }
+  assert.match(layout('index',pages.index), /href="contact.html"/);
   assert.match(pages.contact.content, /href="quote.html"/);
   assert.match(pages.quote.content, /action="\/api\/enquiries" method="POST"/);
   assert.match(pages.quote.content, /name="Goals and audience" required/);
