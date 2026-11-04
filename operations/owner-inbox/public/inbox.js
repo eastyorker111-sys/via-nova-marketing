@@ -1,4 +1,6 @@
+import {filterRecords,needsFollowUp,handoverText} from './crm.mjs';
 const $=id=>document.getElementById(id), el=(tag,text,cls)=>{const n=document.createElement(tag);n.textContent=text;if(cls)n.className=cls;return n;};
+let appliedFilters={query:'',stage:'',followup:''};
 let rows=[],loading=false,next=null;
 const dirty=new Set(),saving=new Set();
 function protectDrafts(){
@@ -10,11 +12,14 @@ window.addEventListener('beforeunload',event=>{if(dirty.size||saving.size){event
 function render(){
   $('records').replaceChildren();const live=rows.filter(r=>!r.is_test);
   $('count').textContent=live.length;$('new').textContent=live.filter(r=>r.owner_status==='New').length;$('alerts').textContent=live.filter(r=>r.notification_state!=='sent').length;
-  const visible=rows.filter(r=>$('tests').checked||!r.is_test);
+  if($('due-count'))$('due-count').textContent=live.filter(r=>needsFollowUp(r)).length;
+  const visible=filterRecords(rows,{...appliedFilters,tests:$('tests').checked});
+  if($('filter-state'))$('filter-state').textContent=`Showing ${visible.length} of ${rows.length} loaded records. Search and filters apply to loaded records; load older records to search further.`;
   if(!visible.length)$('records').append(el('p','No matching records loaded. Refresh to check for new enquiries.'));
   for(const r of visible){
     const card=el('article','');card.id='enquiry-'+r.id;const title=el('h2',(r.is_test?'TEST · ':'')+r.name);title.id='heading-'+r.id;card.setAttribute('aria-labelledby',title.id);card.append(title);card.append(el('p',`${r.id} · ${r.received_at} · ${r.form_kind} · ${r.email}`,'meta'));
     if(r.business)card.append(el('p',r.business));card.append(el('p',r.message,'message'));
+    if(needsFollowUp(r))card.append(el('p','Follow-up due '+r.follow_up_due,'notice'));
     card.append(el('p',`Marketing permission: ${r.marketing_consent}. Email alert: ${r.notification_state||'unknown'}.`,'meta'));
     const form=el('form',''),cols=el('div','','columns'),status=el('select','');
     form.setAttribute('aria-label','Owner fields for enquiry '+r.id);status.name='status';
@@ -36,6 +41,9 @@ function render(){
       r.revision=result.revision;r.owner_status=status.value;r.owner_notes=notes.value;r.follow_up_due=due.value;r.customer_reference=customer.value;confirmCustomer.checked=false;dirty.delete(r.id);feedback.textContent='Saved. Original submission unchanged.';
     }catch(error){feedback.textContent=error.message;feedback.className='error';}finally{saving.delete(r.id);for(const control of [button,discard,status,due,notes,customer,confirmCustomer])control.disabled=false;feedback.focus();}});
     card.append(form);
+    const handover=el('button','Copy project handover');handover.type='button';
+    handover.addEventListener('click',async()=>{if(dirty.has(r.id)||saving.has(r.id)){feedback.textContent='Save your owner fields before copying the handover.';return;}try{await navigator.clipboard.writeText(handoverText(r));feedback.textContent='Copied for your private project workbook. No project, invoice, booking or message was created.';}catch{feedback.textContent='Clipboard unavailable. Use the private case export to preserve this record.';}});
+    card.append(handover);
     const conversationButton=el('button','Open communication timeline');conversationButton.type='button';
     conversationButton.addEventListener('click',()=>{if(conversationButton.disabled)return;conversationButton.disabled=true;window.attachCommunication(card,r,{dirty,saving});});
     card.append(conversationButton);$('records').append(card);
@@ -59,4 +67,6 @@ $('download-backup').addEventListener('click',async()=>{
  try{const response=await fetch('/api/enquiries?export=backup',{credentials:'same-origin',cache:'no-store'});const data=await response.json();if(!response.ok)throw Error(data.error||'Backup failed');if(data.format!=='via-nova-marketing-backup'||!Array.isArray(data.tables))throw Error('Invalid backup response');
  const url=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json'}));const a=document.createElement('a');a.href=url;a.download='via-nova-marketing-backup-'+data.exportedAt.replace(/[:.]/g,'-')+'.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);status.textContent='Backup download started. Keep it private and confirm the file was saved. '+data.tables.map(t=>t.table+': '+t.rows.length).join('; ');
  }catch(error){status.textContent=error.message+' No partial backup was offered.';}finally{button.disabled=false;}
-});refresh();
+});
+if($('crm-filters'))$('crm-filters').addEventListener('submit',event=>{event.preventDefault();if(loading||protectDrafts())return;appliedFilters={query:$('crm-search').value,stage:$('crm-stage').value,followup:$('crm-followup').value};render();});
+refresh();
