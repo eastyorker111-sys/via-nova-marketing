@@ -38,7 +38,7 @@ async function stableUuid(value){
  return `${h.slice(0,8)}-${h.slice(8,12)}-${h.slice(12,16)}-${h.slice(16,20)}-${h.slice(20)}`;
 }
 async function importCheckedReply(message,env,config={},ownerMatch){
- if(config.enabled!==true||config.authorizedMailbox!=='east.yorker111@gmail.com'||config.verifiedRecipient!=='hello@vianovamarketing.ca')return {state:'disabled',stored:false};
+ if(config.enabled!==true||config.authorizedMailbox!=='east.yorker111@gmail.com'||config.verifiedRecipient!=='vianovamarketing@outlook.com')return {state:'disabled',stored:false};
  try{
   if(!providerId(message?.id)||!providerId(message?.threadId))return hold('invalid_provider_reference');
   if((message.labelIds||[]).some(x=>['SENT','DRAFT','SPAM','TRASH'].includes(x)))return hold('not_eligible_incoming');
@@ -104,13 +104,13 @@ export async function replayPendingReply(reader,env,config={},messageId){
 // One bounded provider page. Persist review outcomes and cursor before advancing;
 // this module cannot mark messages read, move/delete them, send, or schedule itself.
 export async function collectGmailReplyPage(reader,env,config={},pageToken){
- if(config.enabled!==true||config.authorizedMailbox!=='east.yorker111@gmail.com'||config.verifiedRecipient!=='hello@vianovamarketing.ca')return {state:'disabled',results:[],advanceAllowed:false};
+ if(config.enabled!==true||config.authorizedMailbox!=='east.yorker111@gmail.com'||config.verifiedRecipient!=='vianovamarketing@outlook.com')return {state:'disabled',results:[],advanceAllowed:false};
  try{
   if(await reader.account()!==config.authorizedMailbox)return {state:'blocked',reason:'wrong_mailbox',results:[],advanceAllowed:false};
   await env.DB.prepare('INSERT OR IGNORE INTO gmail_reply_cursor (mailbox,last_checked) VALUES (?,?)').bind(config.authorizedMailbox,new Date().toISOString()).run();
   const cursor=await env.DB.prepare('SELECT * FROM gmail_reply_cursor WHERE mailbox=?').bind(config.authorizedMailbox).first();
   if(pageToken!==undefined&&pageToken!==cursor.page_token)return {state:'blocked',reason:'stale_page_cursor',results:[],advanceAllowed:false};
-  const page=await reader.list({q:'to:hello@vianovamarketing.ca -in:spam -in:trash -in:sent -in:drafts',maxResults:25,pageToken:cursor.page_token||undefined,includeSpamTrash:false});
+  const page=await reader.list({q:'to:vianovamarketing@outlook.com subject:VNM -from:east.yorker111@gmail.com -in:spam -in:trash -in:sent -in:drafts',maxResults:25,pageToken:cursor.page_token||undefined,includeSpamTrash:false});
   if(!Array.isArray(page.messages||[])||(page.messages||[]).length>25)throw Error('page_limit');
   const results=[];
   for(const item of page.messages||[]){
