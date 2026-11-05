@@ -44,7 +44,7 @@
   try{const q=older&&next?'?'+new URLSearchParams(next):'';const r=await api(null,q);
    if(drafts.size){say('A match was edited during refresh; your fields were preserved.');return;}
    ready=r.readerReady===true;if(!older)list.replaceChildren();(r.rows||[]).forEach(render);next=r.next||null;get('more').hidden=!next;
-   say(r.configured?`${(r.rows||[]).length} references loaded. ${ready?'Read access is configured; check it before collection.':'Gmail reader disabled or awaiting route/access verification.'}`:'Reply review is prepared but not activated. No mailbox messages were read.');
+   say(r.configured?`${(r.rows||[]).length} references loaded. ${ready?'Read access is configured; check it before collection.':'Legacy Gmail reader is inactive. Outlook reply import is not connected.'}`:'Outlook reply import is not connected. Use the enquiry conversation history to record replies manually. No mailbox messages were read.');
    get('last-check').textContent=r.lastDiscoveryAt?'Last recorded discovery: '+r.lastDiscoveryAt:'No discovery execution recorded.';
   }catch(error){say(error.message+' Existing list and fields preserved.');}finally{busy=false;controls();}
  }

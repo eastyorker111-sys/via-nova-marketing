@@ -12,7 +12,7 @@ function setup({disabled=false}={}){
  vm.runInNewContext(source,{document:{getElementById:get,createElement:node},window:{addEventListener(k,f){windows[k]=f}},fetch,URLSearchParams});
  return{all,get,windows,calls,setFail:v=>fail=v,hold:p=>hold=p,form:()=>all.find(n=>n.tag==='form'),inputs:()=>all.filter(n=>n.tag==='input')};
 }
-test('Disabled page does not poll or enable collection',async()=>{const c=setup({disabled:true});await settle();assert.equal(c.calls.length,1);assert.equal(c.get('discover').disabled,true);assert.equal(c.get('check').disabled,true);assert.match(c.get('connection').textContent,/not activated/);});
+test('Disabled page does not poll or enable collection',async()=>{const c=setup({disabled:true});await settle();assert.equal(c.calls.length,1);assert.equal(c.get('discover').disabled,true);assert.equal(c.get('check').disabled,true);assert.match(c.get('connection').textContent,/Outlook reply import is not connected/);});
 test('Failed match preserves fields, blocks refresh/retry and warns before close; explicit discard releases guard',async()=>{
  const c=setup();await settle();const form=c.form(),[id,evidence,confirmation]=c.inputs();id.value='existing-id';evidence.value='Keep this evidence';confirmation.checked=true;form.listeners.input();
  await c.get('refresh').listeners.click();assert.equal(c.calls.length,1);assert.match(c.get('connection').textContent,/Save or discard/);
@@ -28,3 +28,4 @@ test('Refresh arriving during edit preserves the original form; successful match
  const sent=JSON.parse(c.calls.at(-1).opt.body);assert.equal(sent.revision,1);assert.equal(sent.confirmMarketing,true);assert.equal(sent.owner,undefined);
  let prevented=false;c.windows.beforeunload({preventDefault(){prevented=true}});assert.equal(prevented,false);
 });
+

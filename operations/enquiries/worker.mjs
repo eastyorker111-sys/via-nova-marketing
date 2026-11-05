@@ -39,7 +39,7 @@ export default {
    const input=validate(await boundedJson(request));if(!input)return response(400,{error:'Check your name, email and message'});
    if(input.honeypot)return response(400,{error:'Please use the contact alternatives'});
    // Deliberately fail closed until notification and owner-review connections are verified.
-   if(!live&&!input.isTest)return response(503,{error:'This replacement is being tested. Please contact hello@vianovamarketing.ca.'});
+   if(!live&&!input.isTest)return response(503,{error:'This replacement is being tested. Please contact vianovamarketing@outlook.com.'});
    if(!env.LIMITER)return response(503,{error:'Spam protection unavailable'});
    const visitor=env.INTAKE_PROXY_TOKEN?request.headers.get('X-VNM-Visitor'):request.headers.get('CF-Connecting-IP');
    const limit=await env.LIMITER.limit({key:visitor||'unknown'});

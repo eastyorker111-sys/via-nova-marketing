@@ -21,7 +21,7 @@ export function createSubmission({ send, newId = () => crypto.randomUUID() }) {
       return result;
     } catch (error) {
       if(error.definite){pending=undefined;return {state:'invalid',message:error.message};}
-      return { state: 'retry', id: pending.id, message: `Storage could not be confirmed. Keep this page open and retry with the same details and reference ${pending.id}. You can also contact hello@vianovamarketing.ca and quote this reference.` };
+      return { state: 'retry', id: pending.id, message: `Storage could not be confirmed. Keep this page open and retry with the same details and reference ${pending.id}. You can also contact vianovamarketing@outlook.com and quote this reference.` };
     } finally { busy = false; }
   };
 }
