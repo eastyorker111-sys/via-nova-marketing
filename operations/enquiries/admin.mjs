@@ -1,6 +1,5 @@
 import {retention} from './retention.mjs';
 import {communications} from './communications.mjs';
-import {gmailReview} from './gmail-review.mjs';
 const json = (status, body) => new Response(JSON.stringify(body), {status, headers:{'Content-Type':'application/json','Cache-Control':'no-store','X-Content-Type-Options':'nosniff'}});
 export async function admin(request, env) {
   if (!env.ADMIN_TOKEN || env.ADMIN_TOKEN.length < 40) return json(503,{error:'Private access is not configured'});
@@ -10,7 +9,7 @@ export async function admin(request, env) {
   let mismatch=0; for(let i=0;i<a.length;i++) mismatch |= a[i]^b[i];
   if(mismatch) return json(401,{error:'Authentication required'});
   try {
-    if(new URL(request.url).pathname==='/api/admin/replies')return await gmailReview(request,env);
+    if(new URL(request.url).pathname==='/api/admin/replies')return json(request.method==='GET'?200:503,{configured:false,readerReady:false,mailbox:'vianovamarketing@outlook.com',rows:[],state:'disabled',error:request.method==='GET'?undefined:'Direct Outlook import is not connected'});
     if(new URL(request.url).pathname==='/api/admin/messages')return await communications(request,env);
     if(request.method==='GET') {
       const params=new URL(request.url).searchParams;
