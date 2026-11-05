@@ -9,5 +9,5 @@ export const contactForm = `<form id="enquiry-form" action="/api/enquiries" meth
 <input type="hidden" name="_subject" value="Via Nova Marketing — website enquiry">
 <p class="brief-intro">By sending, you ask us to respond to your enquiry. Your request is saved in Via Nova Marketing’s dedicated enquiry system. Please don’t include passwords or payment details. <a href="privacy.html">Privacy information</a>.</p>
 <button class="button" type="submit" disabled>Send enquiry <span aria-hidden="true">↗</span></button>
-<noscript><p>Please enable JavaScript to use this form, or email us directly.</p></noscript><p class="form-status" data-enquiry-status role="status" tabindex="-1">After saving, your reference will appear here. If sending fails, keep this page open and retry or email <a href="mailto:hello@vianovamarketing.ca">hello@vianovamarketing.ca</a>.</p>
+<noscript><p>Please enable JavaScript to use this form, or email us directly.</p></noscript><p class="form-status" data-enquiry-status role="status" tabindex="-1">After saving, your reference will appear here. If sending fails, keep this page open and retry or email <a href="mailto:vianovamarketing@outlook.com">vianovamarketing@outlook.com</a>.</p>
 </form>`;

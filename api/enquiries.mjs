@@ -4,7 +4,7 @@ export default async function handler(req,res){
  if(req.method!=='POST')return fail(405,'Use the website enquiry form');
  if(req.headers.origin!==`https://${req.headers.host}`)return fail(403,'Open the form on our website');
  if(!String(req.headers['content-type']||'').startsWith('application/json'))return fail(415,'Use the website form or contact us by email');
- if(!process.env.ENQUIRY_PROXY_TOKEN)return fail(503,'Enquiries are temporarily unavailable. Please email hello@vianovamarketing.ca.');
+ if(!process.env.ENQUIRY_PROXY_TOKEN)return fail(503,'Enquiries are temporarily unavailable. Please email vianovamarketing@outlook.com.');
  try{
   const body=JSON.stringify(req.body);if(body.length>24576)return fail(413,'Please shorten your message');
   const target=new URL('/api/enquiries',process.env.ENQUIRY_BACKEND_URL);
