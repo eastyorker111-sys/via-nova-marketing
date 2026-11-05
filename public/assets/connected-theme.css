@@ -30,3 +30,15 @@ h1,h2,h3,h4,legend,.page-intro h1,.contact-copy h2,.quote-aside h2{font-family:"
 @media(max-width:760px){.visual-services .service-card{padding:22px!important}.service-route{margin:-22px -22px 22px;padding:23px 22px;min-height:180px}.service-route-track{gap:12px}.service-route-step strong{font-size:15px}.page-intro h1{font-size:40px}}
 @media(prefers-reduced-motion:reduce){.route-light{animation:none}}
 .menu-toggle:not([hidden]){background:#092431!important;color:#f9f7f2!important;border:1px solid #d4af7c80} :root{--sans:"acumin-pro","Source Sans 3",Arial,sans-serif}
+
+/* Match the homepage reading surfaces and Acumin hierarchy. */
+.page-intro h1{font-weight:600;letter-spacing:-.035em;font-size:clamp(38px,5vw,72px);line-height:1.08;max-width:22ch}
+.page-intro p{max-width:62ch;line-height:1.6;font-size:19px}
+.eyebrow{text-transform:none;letter-spacing:.02em;font-size:14px}
+.service-card,.needs-grid article,.about-panel,.about-copy,.contact-note,.contact-grid form,.quote-layout form,.quote-aside{background:#0b2632f2!important;border-color:#99b6ba40!important}
+.service-card p,.about-copy p,.needs-grid p{line-height:1.65;max-width:65ch}
+.button,.button.outline{background:#164a50!important;border-color:#d4af7c80!important;min-height:44px}
+.about-copy h2,.service-card h2,.needs-grid h2{font-weight:600;letter-spacing:-.025em}
+.identity-panel{background:linear-gradient(150deg,#0b2d45,#0b2632)!important}
+.site-footer .brand-logo{width:150px!important}
+@media(max-width:760px){.page-intro h1{font-size:38px}.page-intro p{font-size:17px}.page-intro{padding-top:38px;padding-bottom:34px}}
