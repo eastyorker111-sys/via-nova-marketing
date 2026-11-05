@@ -1,8 +1,8 @@
-// Adapted from the owner-approved 5 October service board. Decorative concepts, not client work.
-const visuals = [
-  "<div class=\"concept scene-0\" aria-hidden=\"true\"><div class=\"paper\"><span class=\"micro\">VIA NOVA / PLAN</span><strong>Your next<br>step, clearer.</strong><div class=\"planline\">Understand <b>01</b></div><div class=\"planline\">Plan <b>02</b></div><div class=\"planline\">Launch <b>03</b></div></div><span class=\"floating\">A clear direction</span></div>",
-  "<div class=\"concept scene-1\" aria-hidden=\"true\"><div class=\"paper\"><span class=\"micro\">VIA NOVA / IDENTITY</span><img src=\"assets/logo-enhanced-v1-640.webp\" alt=\"\" width=\"640\" height=\"240\" loading=\"lazy\"><div class=\"swatches\"><i></i><i></i><i></i><i></i></div></div><span class=\"floating\">One consistent identity</span></div>",
-  "<div class=\"concept scene-2\" aria-hidden=\"true\"><div class=\"paper\"><span class=\"micro\">VIA NOVA / DIGITAL</span><div class=\"browserdots\">● ● ●</div><strong>Your business.<br>Online.</strong><div class=\"products\"><i></i><i></i><i></i></div><span class=\"tinybutton\">Explore the collection ↗</span></div><span class=\"floating\">Website + online store</span></div>",
-  "<div class=\"concept scene-3\" aria-hidden=\"true\"><div class=\"paper\"><span class=\"micro\">VIA NOVA / CONTENT</span><strong>A story worth<br>sharing.</strong><div class=\"contenttile\"><span>▶</span></div><div class=\"planline\">Create · Share · Review</div></div><span class=\"floating\">Content with a purpose</span></div>"
+// Service routes, not portfolio examples or promised business results.
+const routes=[
+ ['Planning','Understand the problem','Choose the priorities','Agree the work'],
+ ['Branding','Explain the offer','Create the identity','Apply it consistently'],
+ ['Websites','Answer their questions','Show what you offer','Make contact easy'],
+ ['Content','Know the audience','Create the story','Connect the next step']
 ];
-export const serviceVisual = index => visuals[index];
+export const serviceVisual=index=>{const [label,...steps]=routes[index];return `<div class="service-route" aria-hidden="true"><span class="route-label">${label}</span><div class="service-route-track">${steps.map(step=>`<div class="service-route-step"><span class="route-point"></span><strong>${step}</strong></div>`).join('')}</div><div class="route-light"></div></div>`;};

@@ -1,5 +1,5 @@
 // Via Nova Marketing only. No passwords, API keys or customer text in this project.
-const VNM={endpoint:'https://via-nova-marketing-enquiries.east-yorker111.workers.dev/api/notifications',owner:'east.yorker111@gmail.com',inbox:'https://via-nova-marketing-owner-inbox.vercel.app/'};
+const VNM={endpoint:'https://via-nova-marketing-enquiries.east-yorker111.workers.dev/api/notifications',owner:'east.yorker111@gmail.com',recipient:'vianovamarketing@outlook.com',inbox:'https://via-nova-marketing-owner-inbox.vercel.app/'};
 function verifySetup(){
  const token=ScriptApp.getIdentityToken();if(!token)throw new Error('Authorize this Google project first.');
  const claims=JSON.parse(Utilities.newBlob(Utilities.base64DecodeWebSafe(token.split('.')[1])).getDataAsString());
@@ -30,7 +30,7 @@ function vnmSend_(tests){
    if(MailApp.getRemainingDailyQuota()<1)throw new Error('Google daily email quota exhausted; pending alerts are retained.');
    const attempt=Utilities.getUuid();if(!vnmRequest_('post',{action:'claim',id:item.id,attempt:attempt}).claimed)continue;
    try{
-    MailApp.sendEmail({to:VNM.owner,name:'Via Nova Marketing operations',subject:(tests?'TEST ONLY — ':'')+'Via Nova Marketing enquiry '+item.id,body:(tests?'Synthetic verification only. No customer or booking.\n\n':'A new website enquiry is ready for your review.\n\n')+'Reference: '+item.id+'\nReceived: '+item.received_at+'\n\nOpen your private inbox: '+VNM.inbox+'\n\nThis alert contains no customer name, email or message. Review and reply through the approved business channel.'});
+    MailApp.sendEmail({to:VNM.recipient,name:'Via Nova Marketing operations',subject:(tests?'TEST ONLY — ':'')+'Via Nova Marketing enquiry '+item.id,body:(tests?'Synthetic verification only. No customer or booking.\n\n':'A new website enquiry is ready for your review.\n\n')+'Reference: '+item.id+'\nReceived: '+item.received_at+'\n\nOpen your private inbox: '+VNM.inbox+'\n\nThis alert contains no customer name, email or message. Review and reply through the approved business channel.'});
     props.setProperty(key,attempt);
    }catch(error){vnmRequest_('post',{action:'uncertain',id:item.id,attempt:attempt});throw new Error('Google send result is uncertain. Inspect Sent mail and the private inbox; do not blindly resend.');}
    vnmRequest_('post',{action:'sent',id:item.id,attempt:attempt});props.deleteProperty(key);

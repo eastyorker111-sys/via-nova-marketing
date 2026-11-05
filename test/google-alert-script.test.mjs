@@ -7,5 +7,5 @@ function setup({sendFails=false,ackFails=false}={}){
  return{getResponseCode:()=>200,getContentText:()=>JSON.stringify(result)};
  }},console:{log(){}}};vm.runInNewContext(source,c);return{c,row,sent};
 }
-test('Google alert uses fixed owner, no customer contents and retry only acknowledges accepted email',()=>{const {c,row,sent}=setup({ackFails:true});assert.throws(()=>c.sendPendingAlerts());assert.equal(sent.length,1);c.sendPendingAlerts();assert.equal(sent.length,1);assert.equal(row.state,'sent');assert.equal(sent[0].to,'east.yorker111@gmail.com');assert.match(sent[0].body,/private inbox/);});
+test('Google alert uses fixed Outlook recipient, no customer contents and retry only acknowledges accepted email',()=>{const {c,row,sent}=setup({ackFails:true});assert.throws(()=>c.sendPendingAlerts());assert.equal(sent.length,1);c.sendPendingAlerts();assert.equal(sent.length,1);assert.equal(row.state,'sent');assert.equal(sent[0].to,'vianovamarketing@outlook.com');assert.match(sent[0].body,/private inbox/);});
 test('uncertain Google sending is retained for review and never blindly retried',()=>{const {c,row,sent}=setup({sendFails:true});assert.throws(()=>c.sendPendingAlerts());assert.equal(row.state,'needs_review');c.sendPendingAlerts();assert.equal(sent.length,1);});
