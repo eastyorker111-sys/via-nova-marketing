@@ -1,5 +1,5 @@
 // Private metadata only: no subjects, addresses of correspondents, bodies or attachments.
-export const gmailEnabled=c=>c?.enabled===true&&c.authorizedMailbox==='east.yorker111@gmail.com'&&c.verifiedRecipient==='vianovamarketing@outlook.com';
+export const gmailEnabled=c=>c?.enabled===true&&c.authorizedMailbox==='east.yorker111@gmail.com'&&c.verifiedRecipient==='hello@vianovamarketing.ca';
 export const gmailKey=(account,id)=>`gmail:${account}:${id}`;
 export const validGmailId=id=>typeof id==='string'&&/^[a-zA-Z0-9_-]{1,128}$/.test(id);
 export async function messageFingerprint(m){

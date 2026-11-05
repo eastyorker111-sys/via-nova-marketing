@@ -1,8 +1,8 @@
 // Read-only, bounded REST transport. No token acquisition, refresh, sending or schedule.
 import {validGmailId} from './gmail-pending.mjs';
 export const MAILBOX='east.yorker111@gmail.com';
-export const RECIPIENT='vianovamarketing@outlook.com';
-export const REPLY_QUERY='to:vianovamarketing@outlook.com subject:VNM -from:east.yorker111@gmail.com -in:spam -in:trash -in:sent -in:drafts';
+export const RECIPIENT='hello@vianovamarketing.ca';
+export const REPLY_QUERY='to:hello@vianovamarketing.ca -in:spam -in:trash -in:sent -in:drafts';
 export function readerReady(env){return env.GMAIL_READ_AUTHORIZED==='true'&&env.GMAIL_ROUTE_VERIFIED==='true'&&Boolean(env.GMAIL_ACCESS_TOKEN);}
 export function createGmailReader(env,fetcher=fetch,permittedIds=[]){
  const allowed=new Set(permittedIds.filter(validGmailId));let verified=false;

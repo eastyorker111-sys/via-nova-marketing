@@ -7,7 +7,7 @@ import {join} from 'node:path';
 import {importGmailReply,replayPendingReply,collectGmailReplyPage} from '../operations/enquiries/gmail-replies.mjs';
 import {matchPendingReply,gmailKey} from '../operations/enquiries/gmail-pending.mjs';
 const eid='00000000-0000-4000-8000-000000000001',second='00000000-0000-4000-8000-000000000002';
-const config={enabled:true,authorizedMailbox:'east.yorker111@gmail.com',verifiedRecipient:'vianovamarketing@outlook.com',allowTests:true};
+const config={enabled:true,authorizedMailbox:'east.yorker111@gmail.com',verifiedRecipient:'hello@vianovamarketing.ca',allowTests:true};
 const owner={verified:true,email:config.authorizedMailbox};
 const msg=()=>({id:'message1',threadId:'thread1',internalDate:'1793707200000',labelIds:['INBOX'],payload:{mimeType:'text/plain',headers:[{name:'From',value:'client@example.invalid'},{name:'To',value:config.verifiedRecipient},{name:'Subject',value:'A later reply without a reference'}],body:{data:Buffer.from('TEST ONLY PRIVATE BODY - must stay absent from pending metadata').toString('base64url')}}});
 function open(path=':memory:'){

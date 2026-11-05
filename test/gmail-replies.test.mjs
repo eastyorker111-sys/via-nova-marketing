@@ -4,13 +4,13 @@ import {DatabaseSync} from 'node:sqlite';
 import {readFileSync} from 'node:fs';
 import {importGmailReply,collectGmailReplyPage} from '../operations/enquiries/gmail-replies.mjs';
 const id='00000000-0000-4000-8000-000000000001';
-const config={enabled:true,authorizedMailbox:'east.yorker111@gmail.com',verifiedRecipient:'vianovamarketing@outlook.com',allowTests:true};
+const config={enabled:true,authorizedMailbox:'east.yorker111@gmail.com',verifiedRecipient:'hello@vianovamarketing.ca',allowTests:true};
 function setup(){
  const db=new DatabaseSync(':memory:');db.exec(readFileSync(new URL('../operations/enquiries/schema.sql',import.meta.url),'utf8'));db.exec(readFileSync(new URL('../operations/enquiries/gmail-pending-schema.sql',import.meta.url),'utf8'));
  db.prepare('INSERT INTO enquiries(id,payload_hash,received_at,form_kind,name,email,business,message,is_test,owner_notes) VALUES (?,?,?,?,?,?,?,?,?,?)').run(id,'test','2026-11-03T12:00:00Z','quick','TEST ONLY','client@example.invalid','','Original request',1,'Preserve these owner notes');
  const env={DB:{prepare(sql){return{bind(...args){return{first:async()=>db.prepare(sql).get(...args),all:async()=>({results:db.prepare(sql).all(...args)}),run:async()=>db.prepare(sql).run(...args)}}}}}};return {db,env};
 }
-function message(mid='abc123',subject=`Re: [VNM:${id}]`){return{id:mid,threadId:'thread1',internalDate:'1793707200000',labelIds:['INBOX'],payload:{mimeType:'text/plain',headers:[{name:'From',value:'Customer <client@example.invalid>'},{name:'To',value:'vianovamarketing@outlook.com'},{name:'Subject',value:subject}],body:{data:Buffer.from('TEST ONLY later customer reply').toString('base64url')}}};}
+function message(mid='abc123',subject=`Re: [VNM:${id}]`){return{id:mid,threadId:'thread1',internalDate:'1793707200000',labelIds:['INBOX'],payload:{mimeType:'text/plain',headers:[{name:'From',value:'Customer <client@example.invalid>'},{name:'To',value:'hello@vianovamarketing.ca'},{name:'Subject',value:subject}],body:{data:Buffer.from('TEST ONLY later customer reply').toString('base64url')}}};}
 test('disabled reader never reads Gmail or writes storage; wrong configured account fails closed',async()=>{
  const {db,env}=setup();try{const reader={account(){throw Error('must not read')}};
  assert.equal((await collectGmailReplyPage(reader,env)).state,'disabled');assert.equal((await importGmailReply(message(),env,{...config,authorizedMailbox:'another@example.invalid'})).state,'disabled');assert.equal(db.prepare('SELECT COUNT(*) n FROM communication_messages').get().n,0);
