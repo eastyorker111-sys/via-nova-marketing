@@ -140,3 +140,32 @@ dialog .close{min-width:44px}dialog{background:linear-gradient(140deg,#103340,#0
 @media(max-width:760px){#vn-intro{padding:24px 22px}.vn-intro-copy{padding-top:24px}#vn-intro-heading{font-size:clamp(34px,9vw,52px)}#vn-intro-description{font-size:18px}.vn-intro-controls{gap:10px;margin-top:24px}.vn-intro-controls button{padding:12px;flex:1}#vn-intro[data-scene="4"] video{object-position:62% center}.deck-nav button{font-size:12px}.question-scene h2{font-size:30px}}
 @media(max-height:480px) and (min-width:600px){#vn-intro{padding:18px 30px}.vn-intro-logo{width:150px}.vn-intro-copy{padding-top:16px}#vn-intro-heading{font-size:34px;margin-bottom:8px}#vn-intro-context{margin-bottom:6px}#vn-intro-description{font-size:18px}.vn-intro-controls{margin-top:12px}}
 @media(prefers-reduced-motion:reduce){#vn-intro,.shell.vn-reveal .experience{transition:none;animation:none}}
+/* The same card hierarchy across screens, with visible manual navigation. */
+.mobile-arrows{display:flex!important;justify-content:flex-end;gap:10px;flex:0 0 auto;margin:8px 0 12px}
+.mobile-arrows button{min-width:48px;min-height:44px;border:1px solid #d4af7c88;background:#103540;color:#f9f7f2;font:inherit;font-size:22px}
+.swipe-hint{display:block!important;font-size:14px;color:#c6d5d9;margin:6px 0 0}
+.question-grid,.learning-grid{mask-image:none;scroll-padding-inline:0}
+.question-card,.learning-card{scroll-snap-align:start;overflow-wrap:break-word}
+@media(max-width:760px){
+ .experience{padding:16px 5% 12px}
+ .question-scene h2,.learning-scene h2{font-size:28px;line-height:1.12;margin-bottom:10px}
+ .question-scene .description{line-height:1.45;margin-bottom:12px}
+ .question-card,.learning-card{flex-basis:94%;min-height:300px;padding:20px!important}
+ .question-card>strong,.learning-card strong{font-size:24px!important;line-height:1.18!important}
+ .question-card>span,.learning-card>span{margin-bottom:10px!important}
+ .question-card>small{margin-top:12px!important;font-size:16px;line-height:1.45}
+ .question-card .card-route{height:50px;min-height:50px;max-height:50px;margin:12px 0 8px}
+ .question-card .card-action{margin-top:auto;padding-top:10px}
+ .learning-card p{font-size:16px!important;line-height:1.45!important}
+ .learning-note{font-size:14px;line-height:1.45}
+ .deck-nav{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;width:100%}
+ .deck-nav button{font-size:12px;line-height:1.25;min-height:44px;text-align:center}
+ footer{padding:8px 4%}
+}
+@media(min-width:761px) and (max-height:800px){
+ .question-card,.learning-card{min-height:300px;padding:20px}
+ .question-card>strong,.learning-card strong{font-size:26px!important}
+ .question-card>span{margin-bottom:12px!important}
+ .question-card .card-route{height:55px;min-height:55px;margin:12px 0 8px}
+ .question-card .card-action{margin-top:auto}
+}

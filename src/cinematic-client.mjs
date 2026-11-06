@@ -53,7 +53,7 @@ const showDeckBeforeMotion=showDeck;showDeck=function(k,page=0){showDeckBeforeMo
 const questionsBeforeMotion=showQuestions;showQuestions=function(){questionsBeforeMotion();requestAnimationFrame(enterScene)};
 const questionPageBeforeMotion=questionPage;questionPage=function(n){questionPageBeforeMotion(n);requestAnimationFrame(enterScene)};
 document.addEventListener('click',e=>{if(e.target.closest('#prev,#q-prev,#learn-prev'))direction=-1;else direction=1},true);
-function slideCards(selector,step){const row=$(selector);if(!row)return;const card=row.querySelector('button:not([hidden])');if(!card)return;row.scrollBy({left:step*(card.getBoundingClientRect().width+14),behavior:reduced?'instant':'smooth'})}
+function slideCards(selector,step){const row=$(selector);if(!row)return;const card=row.querySelector('button:not(.excluded)');if(!card)return;row.scrollBy({left:step*(card.getBoundingClientRect().width+(parseFloat(getComputedStyle(row).gap)||0)),behavior:'instant'})}
 $('#q-card-prev').onclick=()=>slideCards('.question-grid',-1);$('#q-card-next').onclick=()=>slideCards('.question-grid',1);$('#learn-card-prev').onclick=()=>slideCards('.learning-grid',-1);$('#learn-card-next').onclick=()=>slideCards('.learning-grid',1);
 // Horizontal swipes on a card row scroll that row; do not also change scenarios.
 $('.experience').addEventListener('touchend',e=>{if(e.target.closest('.question-grid,.learning-grid'))e.stopImmediatePropagation()},{capture:true,passive:true});
