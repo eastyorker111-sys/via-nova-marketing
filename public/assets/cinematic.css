@@ -198,3 +198,16 @@ footer>.music-toggle{flex-shrink:0;border:1px solid #d4af7c66;background:#03151d
 #vn-intro-video,#vn-intro:before{top:0;right:0;bottom:0;left:0}
 button:focus,a:focus{outline:2px solid #d4af7c;outline-offset:3px}
 @media(max-width:760px){#vn-intro:not([data-scene="5"]) #vn-intro-video{top:auto;right:auto;bottom:auto;left:auto}}
+/* Approved centered closing invitation; remains until the visitor chooses. */
+#vn-intro.closing-card{align-items:center;justify-content:center;text-align:center;padding-bottom:90px}
+#vn-intro.closing-card .vn-intro-logo{align-self:center;width:clamp(190px,24vw,340px);margin:0 0 7vh}
+#vn-intro.closing-card .vn-intro-copy{display:flex;flex-direction:column;align-items:center;margin:0;padding:0;max-width:1100px}
+#vn-intro.closing-card #vn-intro-heading{order:0;max-width:none;font-size:clamp(34px,4.3vw,64px);margin:0 0 24px}
+#vn-intro.closing-card #vn-intro-context{order:1;color:#f9f7f2;font-size:clamp(18px,2vw,27px);margin:0 0 12px}
+#vn-intro.closing-card #vn-intro-description{order:2;color:#edcea2;font-weight:700;font-size:clamp(24px,2.5vw,36px)}
+#vn-intro.closing-card .vn-intro-controls{display:grid;grid-template-columns:repeat(3,auto);justify-content:center;margin-top:28px;gap:14px}
+#vn-intro.closing-card #vn-intro-contact{grid-column:1/-1;grid-row:1;justify-self:center;min-width:250px;background:#164a5099;border-color:#d4af7c;font-size:20px}
+#vn-intro.closing-card #vn-intro-pause,#vn-intro.closing-card #vn-intro-skip,#vn-intro.closing-card .music-toggle{font-size:14px;padding:10px 14px;background:#03151d80}
+#vn-intro-address{position:absolute;bottom:24px;left:0;right:0;text-align:center;color:#f9f7f2;font-size:18px}
+@media(max-width:760px){#vn-intro.closing-card{padding:26px 20px 70px}#vn-intro.closing-card .vn-intro-logo{width:210px;margin-bottom:44px}#vn-intro.closing-card .vn-intro-controls{width:100%;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}#vn-intro.closing-card #vn-intro-contact{width:100%;min-width:0}#vn-intro.closing-card .music-toggle{grid-column:1/-1}#vn-intro.closing-card #vn-intro-heading{font-size:36px}#vn-intro.closing-card #vn-intro-context{font-size:18px}}
+@media(max-height:650px){#vn-intro.closing-card .vn-intro-logo{width:170px;margin-bottom:20px}#vn-intro.closing-card #vn-intro-heading{font-size:32px;margin-bottom:12px}#vn-intro.closing-card .vn-intro-controls{margin-top:18px}}

@@ -1,11 +1,11 @@
 // Original instrumental cue, loaded only when a visitor asks for music.
-const music = new Audio('assets/via-nova-ambient.wav');
+const music = new Audio('assets/via-nova-ambient-audible.wav');
 music.id = 'background-music';
 music.hidden = true;
 document.body.append(music);
 music.preload = 'none';
 music.loop = true;
-music.volume = 0.65;
+music.volume = 0.8;
 let enabled = false;
 const buttons = [];
 function update() {
