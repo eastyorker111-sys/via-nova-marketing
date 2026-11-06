@@ -1,0 +1,3 @@
+# Original ambient music — 6 November 2026
+Original synthesized 24-second cue, created for Via Nova Marketing: warm electric-key notes and a restrained sustained pad. No third-party recording, sample or generated-provider track used. Composition source: scripts/compose-ambient.py (Python + NumPy; output location can be adapted when regenerating). Delivered asset: public/assets/via-nova-ambient.wav, stereo PCM 22050 Hz.
+Playback is off on each new page load, preload none, and only begins on explicit visitor interaction. Volume is 0.12. Intro and footer buttons share the same state. Hidden tabs and page departure pause music. Music is independent of visual-motion preference and controls. Visitors can turn it off at any time. No cookies or storage added.
