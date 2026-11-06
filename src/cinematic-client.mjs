@@ -249,3 +249,12 @@ const hireWithJourney=showDeck;showDeck=function(k,page=0){hireWithJourney(k,pag
 const sectionFromHash={situations:'questions',connections:'learn',working:'hire',services:'services'};
 function openHashSection(){const k=sectionFromHash[location.hash.slice(1)];if(k)showDeck(k)}
 window.addEventListener('hashchange',openHashSection);openHashSection();
+// The new film hands off to the existing website, not a duplicate landing page.
+const vnOverlay=document.querySelector('#vn-intro'),vnVideo=document.querySelector('#vn-intro-video');
+let vnLeaving=false;
+function vnFinish(){if(vnLeaving)return;vnLeaving=true;vnVideo.pause();showQuestions();document.querySelector('.shell').inert=false;document.body.classList.remove('vn-intro-active');document.querySelector('.shell').classList.add('vn-reveal');vnOverlay.classList.add('leaving');setTimeout(()=>{vnOverlay.hidden=true;document.querySelector('.shell').classList.remove('vn-reveal');},reduced?0:1120)}
+function vnStart(){if(reduced){showQuestions();return}vnLeaving=false;playing=false;vnOverlay.hidden=false;vnOverlay.classList.remove('leaving');document.querySelector('.shell').inert=true;document.body.classList.add('vn-intro-active');vnVideo.currentTime=0;vnVideo.play().catch(()=>{document.querySelector('#vn-intro-pause').textContent='Play intro'});}
+vnVideo.addEventListener('ended',vnFinish);vnVideo.addEventListener('error',vnFinish);vnVideo.addEventListener('play',()=>document.querySelector('#vn-intro-pause').textContent='Pause intro');vnVideo.addEventListener('pause',()=>document.querySelector('#vn-intro-pause').textContent='Play intro');
+document.querySelector('#vn-intro-skip').onclick=vnFinish;document.querySelector('#vn-intro-pause').onclick=()=>vnVideo.paused?vnVideo.play().catch(vnFinish):vnVideo.pause();
+document.querySelector('#replay').onclick=vnStart;document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!vnOverlay.hidden)vnFinish()});document.addEventListener('visibilitychange',()=>{if(document.hidden)vnVideo.pause()});
+if(!location.hash&&!reduced)vnStart();else showQuestions();
