@@ -211,3 +211,7 @@ button:focus,a:focus{outline:2px solid #d4af7c;outline-offset:3px}
 #vn-intro-address{position:absolute;bottom:24px;left:0;right:0;text-align:center;color:#f9f7f2;font-size:18px}
 @media(max-width:760px){#vn-intro.closing-card{padding:26px 20px 70px}#vn-intro.closing-card .vn-intro-logo{width:210px;margin-bottom:44px}#vn-intro.closing-card .vn-intro-controls{width:100%;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}#vn-intro.closing-card #vn-intro-contact{width:100%;min-width:0}#vn-intro.closing-card .music-toggle{grid-column:1/-1}#vn-intro.closing-card #vn-intro-heading{font-size:36px}#vn-intro.closing-card #vn-intro-context{font-size:18px}}
 @media(max-height:650px){#vn-intro.closing-card .vn-intro-logo{width:170px;margin-bottom:20px}#vn-intro.closing-card #vn-intro-heading{font-size:32px;margin-bottom:12px}#vn-intro.closing-card .vn-intro-controls{margin-top:18px}}
+
+#vn-intro.closing-card #vn-intro-pause{display:none}
+#vn-intro.closing-card .vn-intro-controls{grid-template-columns:repeat(2,minmax(0,1fr))}
+#vn-intro.closing-card .music-toggle{grid-column:auto}
