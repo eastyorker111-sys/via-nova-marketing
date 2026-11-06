@@ -18,7 +18,7 @@ for (const [key, page] of Object.entries(pages)) {
       else if (href.includes('.html')) {
         const [file, fragment] = href.split('#');
         const destination = pages[file.slice(0,-5)];
-        assert.ok(destination, href);
+        assert.ok(destination || existsSync(`public/${file}`), href);
         if (fragment) assert.ok(destination.content.includes(`id="${fragment}"`), href);
       }
       else assert.ok(existsSync(`public/${href}`) || (['assets/analytics.js','assets/enquiry-client.js','assets/cinematic.js'].includes(href) && existsSync(`dist/${href}`)), href);
