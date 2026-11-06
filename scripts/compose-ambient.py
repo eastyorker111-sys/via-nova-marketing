@@ -27,9 +27,10 @@ for delay,gain in [(.19,.14),(.37,.10),(.61,.06)]:
     d=int(delay*sr); mix[d:]+=mix[:-d,::-1].copy()*gain
 fade=np.minimum(1,np.arange(len(mix))/(sr*1.3))*np.minimum(1,(len(mix)-1-np.arange(len(mix)))/(sr*1.8))
 mix*=fade[:,None]
-mix*=.65/max(np.max(np.abs(mix)),.01)
+mix*=.12/max(np.max(np.abs(mix)),.01)
 out=Path(__file__).resolve().parents[1] / 'public/assets/via-nova-ambient.wav'
 with wave.open(str(out),'wb') as w:
     w.setnchannels(2);w.setsampwidth(2);w.setframerate(sr);w.writeframes((mix*32767).astype('<i2').tobytes())
 print('Created original 24-second instrumental cue:',out.stat().st_size,'bytes')
+
 

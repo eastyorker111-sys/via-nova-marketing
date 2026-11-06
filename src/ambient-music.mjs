@@ -5,7 +5,7 @@ music.hidden = true;
 document.body.append(music);
 music.preload = 'none';
 music.loop = true;
-music.volume = 0.12;
+music.volume = 0.65;
 let enabled = false;
 const buttons = [];
 function update() {
@@ -37,4 +37,5 @@ document.addEventListener('visibilitychange', () => {
   else if (enabled) music.play().catch(() => { enabled = false; update(); });
 });
 window.addEventListener('pagehide', () => music.pause());
+
 
