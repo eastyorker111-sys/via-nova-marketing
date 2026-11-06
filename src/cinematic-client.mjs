@@ -78,7 +78,7 @@ const previousQuestions=showQuestions;showQuestions=function(){previousQuestions
 let keyboardNavigation=false;
 document.addEventListener('keydown',()=>{keyboardNavigation=true});
 document.addEventListener('pointerdown',()=>{keyboardNavigation=false},{passive:true});
-function trackTick(now){const dt=now-trackPrevious;trackPrevious=now;const row=activeTrack();if(row&&!(keyboardNavigation&&document.activeElement?.closest('.experience,header,footer'))&&ambientPlaying&&!reduced&&!dialog.open&&!document.hidden&&now>=interactionUntil&&$('.experience').classList.contains('live')){trackElapsed+=dt;if(trackElapsed>=(row.scrollWidth<=row.clientWidth+5?24000:9000)){trackElapsed=0;const cards=[...row.querySelectorAll('button')].filter(c=>!c.classList.contains('excluded')),first=cards[0];if(first){const stride=first.getBoundingClientRect().width+(innerWidth<=760?14:20),max=row.scrollWidth-row.clientWidth;if(row.scrollLeft>=max-5){const keys=['questions','learn','hire','services'];const k=keys[(keys.indexOf(currentDeck)+1)%keys.length];showDeck(k)}else{row.scrollBy({left:stride,behavior:'smooth'})}}}}requestAnimationFrame(trackTick)}requestAnimationFrame(trackTick);
+// Card browsing is visitor-controlled; ambient background motion remains separate.
 // Carousel gestures must not switch the whole scenario while the card track scrolls.
 document.querySelectorAll('.question-grid,.learning-grid').forEach(row=>row.addEventListener('scroll',()=>{if(performance.now()<interactionUntil)trackElapsed=9000},{passive:true}));
 
@@ -249,12 +249,25 @@ const hireWithJourney=showDeck;showDeck=function(k,page=0){hireWithJourney(k,pag
 const sectionFromHash={situations:'questions',connections:'learn',working:'hire',services:'services'};
 function openHashSection(){const k=sectionFromHash[location.hash.slice(1)];if(k)showDeck(k)}
 window.addEventListener('hashchange',openHashSection);openHashSection();
-// The new film hands off to the existing website, not a duplicate landing page.
-const vnOverlay=document.querySelector('#vn-intro'),vnVideo=document.querySelector('#vn-intro-video');
-let vnLeaving=false;
-function vnFinish(){if(vnLeaving)return;vnLeaving=true;vnVideo.pause();showQuestions();document.querySelector('.shell').inert=false;document.body.classList.remove('vn-intro-active');document.querySelector('.shell').classList.add('vn-reveal');vnOverlay.classList.add('leaving');setTimeout(()=>{vnOverlay.hidden=true;document.querySelector('.shell').classList.remove('vn-reveal');},reduced?0:1120)}
-function vnStart(){if(reduced){showQuestions();return}vnLeaving=false;playing=false;vnOverlay.hidden=false;vnOverlay.classList.remove('leaving');document.querySelector('.shell').inert=true;document.body.classList.add('vn-intro-active');vnVideo.currentTime=0;vnVideo.play().catch(()=>{document.querySelector('#vn-intro-pause').textContent='Play intro'});}
-vnVideo.addEventListener('ended',vnFinish);vnVideo.addEventListener('error',vnFinish);vnVideo.addEventListener('play',()=>document.querySelector('#vn-intro-pause').textContent='Pause intro');vnVideo.addEventListener('pause',()=>document.querySelector('#vn-intro-pause').textContent='Play intro');
-document.querySelector('#vn-intro-skip').onclick=vnFinish;document.querySelector('#vn-intro-pause').onclick=()=>vnVideo.paused?vnVideo.play().catch(vnFinish):vnVideo.pause();
-document.querySelector('#replay').onclick=vnStart;document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!vnOverlay.hidden)vnFinish()});document.addEventListener('visibilitychange',()=>{if(document.hidden)vnVideo.pause()});
-if(!location.hash&&!reduced)vnStart();else showQuestions();
+// Responsive captions stay readable independently of the full-window footage.
+const vnOverlay=$('#vn-intro'),vnVideo=$('#vn-intro-video');
+const vnCaptions=[
+ [0,'Branding, websites & marketing','Good work deserves to be seen.','Help customers understand what you offer and take the next step.'],
+ [3,'Start with your business','What is getting in the way?','A new idea, an unclear offer or a website that needs attention.'],
+ [6,'Build the pieces you need','One service. Or connected support.','Bring your branding, website and content together.'],
+ [9.7,'Heart in Crystal · Portfolio example','From an idea to an online presence.','Business name, identity, website and product visuals.'],
+ [12.8,'Heart in Crystal · Portfolio example','Make the next step clear.','Connect the offer, useful information and the customer journey.'],
+ [16.9,'Work directly with Nabil Khan','What could we build for you?','Choose your situation. We agree the work and price before starting.']
+];
+let vnLeaving=false,vnFinishTimer,vnCaptionIndex=-1;
+function vnUpdateCaption(){const time=vnVideo.currentTime;let next=0;vnCaptions.forEach((c,i)=>{if(time>=c[0])next=i});if(next===vnCaptionIndex)return;vnCaptionIndex=next;const c=vnCaptions[next];txt('#vn-intro-context',c[1]);txt('#vn-intro-heading',c[2]);txt('#vn-intro-description',c[3]);vnOverlay.dataset.scene=String(next);}
+function vnFinish(){if(vnLeaving)return;vnLeaving=true;vnVideo.pause();showQuestions();$('.shell').inert=false;document.body.classList.remove('vn-intro-active');$('.shell').classList.add('vn-reveal');vnOverlay.classList.add('leaving');vnOverlay.inert=true;$('#contact').focus({preventScroll:true});vnFinishTimer=setTimeout(()=>{vnOverlay.hidden=true;$('.shell').classList.remove('vn-reveal')},reduced?0:400)}
+function vnStart(){clearTimeout(vnFinishTimer);if(reduced){showQuestions();return}vnLeaving=false;playing=false;vnOverlay.hidden=false;vnOverlay.inert=false;vnOverlay.classList.remove('leaving');$('.shell').inert=true;document.body.classList.add('vn-intro-active');vnVideo.currentTime=0;vnCaptionIndex=-1;vnUpdateCaption();vnVideo.play().catch(()=>txt('#vn-intro-pause','Play intro'));$('#vn-intro-skip').focus({preventScroll:true});}
+vnVideo.addEventListener('timeupdate',vnUpdateCaption);vnVideo.addEventListener('seeked',vnUpdateCaption);
+vnVideo.addEventListener('ended',vnFinish);vnVideo.addEventListener('error',vnFinish);vnVideo.querySelector('source').addEventListener('error',vnFinish);
+vnVideo.addEventListener('play',()=>txt('#vn-intro-pause','Pause intro'));vnVideo.addEventListener('pause',()=>txt('#vn-intro-pause','Play intro'));
+$('#vn-intro-skip').onclick=vnFinish;$('#vn-intro-pause').onclick=()=>vnVideo.paused?vnVideo.play().catch(vnFinish):vnVideo.pause();
+$('#replay').onclick=vnStart;document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!vnOverlay.hidden)vnFinish()});document.addEventListener('visibilitychange',()=>{if(document.hidden)vnVideo.pause()});
+if(!location.hash&&!reduced)vnStart();else if(!location.hash)showQuestions();
+
+matchMedia('(prefers-reduced-motion: reduce)').addEventListener('change',e=>{if(e.matches&&!vnOverlay.hidden)vnFinish()});
