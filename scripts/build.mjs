@@ -13,4 +13,4 @@ await writeFile('dist/404.html', layout('404', { title: 'Page not found', descri
 await build({entryPoints:['src/analytics.mjs'], bundle:true, minify:true, platform:'browser', outfile:'dist/assets/analytics.js'});
 await build({entryPoints:['src/enquiry-client.mjs'], bundle:true, minify:true, platform:'browser', outfile:'dist/assets/enquiry-client.js'});
 
-await build({entryPoints:['src/cinematic-client.mjs'],bundle:true,minify:true,platform:'browser',outfile:'dist/assets/cinematic.js'});
+await build({entryPoints:['src/cinematic-client.mjs'],target:'chrome79',bundle:true,minify:true,platform:'browser',outfile:'dist/assets/cinematic.js'});

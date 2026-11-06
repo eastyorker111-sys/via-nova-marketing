@@ -11,7 +11,8 @@ for (const [key, page] of Object.entries(pages)) {
     assert.ok(html.includes('index, follow'));
     assert.ok(!html.includes('noindex'));
     assert.ok(html.includes('rel="canonical"'));
-    for (const [,href] of html.matchAll(/(?:href|src)="([^"]+)"/g)) {
+    for (const [,rawHref] of html.matchAll(/(?:href|src)="([^"]+)"/g)) {
+      const href=rawHref.split('?')[0];
       if (/^(https:|tel:|mailto:)/.test(href)) { assert.ok(new URL(href).pathname, href); }
       else if (href.startsWith('#')) assert.ok(html.includes(`id="${href.slice(1)}"`));
       else if (href.includes('.html')) {

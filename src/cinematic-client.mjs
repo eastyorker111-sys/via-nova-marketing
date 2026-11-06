@@ -10,7 +10,7 @@ function introBeat(n){
  if(n===beat)return;const prior=beat;beat=n;
  const film=$('.film'),title=$('#film-title');film.classList.toggle('noise',n<2);film.dataset.beat=n;
  if(n===3){txt('#film-caption','Business planning, branding, websites and customer follow-up.');return}
- title.getAnimations().forEach(a=>a.cancel());
+ (title.getAnimations?title.getAnimations():[]).forEach(a=>a.cancel());
  title.textContent=['Not sure what your\nbusiness needs next?','A clear plan.\nThe right work behind it.','VIA NOVA'][n];
  txt('#brand-sub',n===2?'MARKETING':'');txt('#film-caption',n===0?'Starting out, changing direction or trying to get better enquiries?':n===1?'I help you decide what needs attention, then create the branding, website or content to support it.':'');
  if(!reduced)title.animate([{opacity:0,transform:'translate3d(0,18px,0)'},{opacity:1,transform:'translate3d(0,0,0)'}],{duration:650,easing:'cubic-bezier(.16,1,.3,1)'});
@@ -263,11 +263,13 @@ const vnCaptions=[
 let vnLeaving=false,vnFinishTimer,vnCaptionIndex=-1;
 function vnUpdateCaption(){const time=vnVideo.currentTime;let next=0;vnCaptions.forEach((c,i)=>{if(time>=c[0])next=i});if(next===vnCaptionIndex)return;vnCaptionIndex=next;const c=vnCaptions[next];txt('#vn-intro-context',c[1]);txt('#vn-intro-heading',c[2]);txt('#vn-intro-description',c[3]);vnOverlay.dataset.scene=String(next);}
 function vnFinish(){if(vnLeaving)return;vnLeaving=true;vnVideo.pause();showQuestions();$('.shell').inert=false;document.body.classList.remove('vn-intro-active');$('.shell').classList.add('vn-reveal');vnOverlay.classList.add('leaving');vnOverlay.inert=true;$('#contact').focus({preventScroll:true});vnFinishTimer=setTimeout(()=>{vnOverlay.hidden=true;$('.shell').classList.remove('vn-reveal')},reduced?0:400)}
-function vnStart(){clearTimeout(vnFinishTimer);if(reduced){showQuestions();return}vnLeaving=false;playing=false;vnOverlay.hidden=false;vnOverlay.inert=false;vnOverlay.classList.remove('leaving');$('.shell').inert=true;document.body.classList.add('vn-intro-active');vnVideo.currentTime=0;vnCaptionIndex=-1;vnUpdateCaption();vnVideo.play().catch(()=>txt('#vn-intro-pause','Play intro'));$('#vn-intro-skip').focus({preventScroll:true});}
+function vnStart(){clearTimeout(vnFinishTimer);$('#vn-intro-contact').hidden=true;if(reduced){showQuestions();return}vnLeaving=false;playing=false;vnOverlay.hidden=false;vnOverlay.inert=false;vnOverlay.classList.remove('leaving');$('.shell').inert=true;document.body.classList.add('vn-intro-active');vnVideo.currentTime=0;vnCaptionIndex=-1;vnUpdateCaption();vnVideo.play().catch(()=>txt('#vn-intro-pause','Play intro'));$('#vn-intro-skip').focus({preventScroll:true});}
 vnVideo.addEventListener('timeupdate',vnUpdateCaption);vnVideo.addEventListener('seeked',vnUpdateCaption);
-vnVideo.addEventListener('ended',vnFinish);vnVideo.addEventListener('error',vnFinish);vnVideo.querySelector('source').addEventListener('error',vnFinish);
+function vnClosingCard(){$('#vn-intro-contact').hidden=false;txt('#vn-intro-context','Helping local businesses.');txt('#vn-intro-heading','.CA matters.');txt('#vn-intro-description','Guiding every step. Work directly with Nabil Khan.');txt('#vn-intro-pause','Replay intro');vnOverlay.dataset.scene='5';}
+vnVideo.addEventListener('ended',vnClosingCard);vnVideo.addEventListener('error',vnFinish);vnVideo.querySelector('source').addEventListener('error',vnFinish);
 vnVideo.addEventListener('play',()=>txt('#vn-intro-pause','Pause intro'));vnVideo.addEventListener('pause',()=>txt('#vn-intro-pause','Play intro'));
-$('#vn-intro-skip').onclick=vnFinish;$('#vn-intro-pause').onclick=()=>vnVideo.paused?vnVideo.play().catch(vnFinish):vnVideo.pause();
+$('#vn-intro-contact').onclick=()=>{vnFinish();mountContact();if(!dialog.open)dialog.showModal()};
+$('#vn-intro-skip').onclick=vnFinish;$('#vn-intro-pause').onclick=()=>vnVideo.ended?vnStart():vnVideo.paused?vnVideo.play().catch(vnFinish):vnVideo.pause();
 $('#replay').onclick=vnStart;document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!vnOverlay.hidden)vnFinish()});document.addEventListener('visibilitychange',()=>{if(document.hidden)vnVideo.pause()});
 if(!location.hash&&!reduced)vnStart();else if(!location.hash)showQuestions();
 
