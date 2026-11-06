@@ -1,5 +1,5 @@
 // Original instrumental cue, loaded only when a visitor asks for music.
-const music = new Audio('assets/via-nova-ambient-audible.wav?v=balanced');
+const music = new Audio('assets/via-nova-ambient-soft.wav');
 music.id = 'background-music';
 music.hidden = true;
 document.body.append(music);
