@@ -252,10 +252,10 @@ function openHashSection(){const k=sectionFromHash[location.hash.slice(1)];if(k)
 window.addEventListener('hashchange',openHashSection);openHashSection();
 // Responsive captions stay readable independently of the full-window footage.
 const vnOverlay=$('#vn-intro'),vnVideo=$('#vn-intro-video');
-const vnPhone=matchMedia('(max-width:760px)');
-function vnPhoneElements(){
+const vnPhone=matchMedia('(max-width:900px)');
+function vnPhoneElements(ending=false){
  vnOverlay.querySelectorAll('.vn-intro-copy,.vn-intro-logo').forEach(el=>el.remove());
- if(vnPhone.matches){
+ if(vnPhone.matches||ending){
   const logo=document.createElement('img');logo.className='vn-intro-logo';logo.src='assets/cinematic/asset-5.png';logo.alt='Via Nova Marketing';vnOverlay.prepend(logo);
   const copy=document.createElement('div');copy.className='vn-intro-copy';copy.innerHTML='<p id="vn-intro-context"></p><h2 id="vn-intro-heading"></h2><p id="vn-intro-description"></p>';vnOverlay.insertBefore(copy,$('.vn-intro-controls'));
  }
@@ -269,10 +269,17 @@ const vnCaptions=[
  [38.5,'Work directly with Nabil Khan','What could we build for you?','Choose your situation. We agree the work and price before starting.']
 ];
 let vnLeaving=false,vnFinishTimer,vnCaptionIndex=-1;
-function vnUpdateCaption(){const time=vnVideo.currentTime;let next=0;vnCaptions.forEach((c,i)=>{if(time>=c[0])next=i});const ending=time>=47;$('#vn-intro-contact').hidden=!ending;if(next===vnCaptionIndex&&!ending)return;vnCaptionIndex=next;if(vnPhone.matches){const c=ending?[47,'Helping local businesses. Guiding every step.','Your business could be next.','.CA matters.']:vnCaptions[next];txt('#vn-intro-context',c[1]);txt('#vn-intro-heading',c[2]);txt('#vn-intro-description',c[3]);}}
-function vnSelectFilm(){const time=vnVideo.currentTime||0,wasPlaying=!vnVideo.paused;vnPhoneElements();vnCaptionIndex=-1;vnVideo.querySelector('source').src=vnPhone.matches?'assets/via-nova-intro-phone-57s.mp4':'assets/via-nova-intro-compatible.mp4';vnVideo.load();vnVideo.addEventListener('loadedmetadata',()=>{vnVideo.currentTime=Math.min(time,vnVideo.duration);vnUpdateCaption();if(wasPlaying)vnVideo.play().catch(()=>{});},{once:true});vnUpdateCaption();}
+function vnUpdateCaption(){
+ const time=vnVideo.currentTime;let next=0;vnCaptions.forEach((c,i)=>{if(time>=c[0])next=i});
+ const ending=time>=47;
+ if(vnOverlay.classList.contains('closing-card')!==ending){vnOverlay.classList.toggle('closing-card',ending);vnPhoneElements(ending);vnCaptionIndex=-1;}
+ $('#vn-intro-contact').hidden=!ending;$('#vn-intro-address').hidden=!ending;$('#vn-intro-pause').hidden=ending;
+ if(next===vnCaptionIndex&&!ending)return;vnCaptionIndex=next;
+ if(vnPhone.matches||ending){const c=ending?[47,'Helping local businesses. Guiding every step.','Your business could be next.','.CA matters.']:vnCaptions[next];txt('#vn-intro-context',c[1]);txt('#vn-intro-heading',c[2]);txt('#vn-intro-description',c[3]);}
+}
+function vnSelectFilm(){const time=vnVideo.currentTime||0,wasPlaying=!vnVideo.paused;vnPhoneElements(time>=47);vnCaptionIndex=-1;vnVideo.querySelector('source').src=vnPhone.matches?'assets/via-nova-intro-phone-57s.mp4':'assets/via-nova-intro-responsive-57s.mp4';vnVideo.load();vnVideo.addEventListener('loadedmetadata',()=>{vnVideo.currentTime=Math.min(time,vnVideo.duration);vnUpdateCaption();if(wasPlaying)vnVideo.play().catch(()=>{});},{once:true});vnUpdateCaption();}
 function vnFinish(){if(vnLeaving)return;vnLeaving=true;vnVideo.pause();showQuestions();$('.shell').inert=false;document.body.classList.remove('vn-intro-active');$('.shell').classList.add('vn-reveal');vnOverlay.classList.add('leaving');vnOverlay.inert=true;$('#contact').focus({preventScroll:true});vnFinishTimer=setTimeout(()=>{vnOverlay.hidden=true;$('.shell').classList.remove('vn-reveal')},reduced?0:400)}
-function vnStart(){clearTimeout(vnFinishTimer);$('#vn-intro-pause').hidden=false;vnOverlay.classList.remove('closing-card');$('#vn-intro-address').hidden=true;$('#vn-intro-contact').hidden=true;if(reduced){showQuestions();return}vnLeaving=false;playing=false;vnOverlay.hidden=false;vnOverlay.inert=false;vnOverlay.classList.remove('leaving');$('.shell').inert=true;document.body.classList.add('vn-intro-active');vnVideo.currentTime=0;vnCaptionIndex=-1;vnUpdateCaption();vnVideo.play().catch(()=>txt('#vn-intro-pause','Play intro'));$('#vn-intro-skip').focus({preventScroll:true});}
+function vnStart(){clearTimeout(vnFinishTimer);$('#vn-intro-pause').hidden=false;vnOverlay.classList.remove('closing-card');vnPhoneElements();$('#vn-intro-address').hidden=true;$('#vn-intro-contact').hidden=true;if(reduced){showQuestions();return}vnLeaving=false;playing=false;vnOverlay.hidden=false;vnOverlay.inert=false;vnOverlay.classList.remove('leaving');$('.shell').inert=true;document.body.classList.add('vn-intro-active');vnVideo.currentTime=0;vnCaptionIndex=-1;vnUpdateCaption();vnVideo.play().catch(()=>txt('#vn-intro-pause','Play intro'));$('#vn-intro-skip').focus({preventScroll:true});}
 vnVideo.addEventListener('timeupdate',vnUpdateCaption);vnVideo.addEventListener('seeked',vnUpdateCaption);
 function vnClosingCard(){vnUpdateCaption();$('#vn-intro-contact').hidden=false;$('#vn-intro-pause').hidden=true;}
 vnVideo.addEventListener('ended',vnClosingCard);vnVideo.addEventListener('error',vnFinish);vnVideo.querySelector('source').addEventListener('error',vnFinish);

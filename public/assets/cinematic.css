@@ -216,20 +216,38 @@ button:focus,a:focus{outline:2px solid #d4af7c;outline-offset:3px}
 #vn-intro.closing-card .vn-intro-controls{grid-template-columns:repeat(2,minmax(0,1fr))}
 #vn-intro.closing-card .music-toggle{grid-column:auto}
 
-/* Lettered desktop film: no redundant caption or logo elements. */
-#vn-intro{padding:0 0 84px;background:#03151d}
+
+/* Intro only: the site's wave, type and palette across all screens. */
+#vn-intro{padding:0 0 76px;background:linear-gradient(#03151d88,#03151dbb),url(cinematic/asset-2.png) center/cover no-repeat;color:var(--ivory)}
 #vn-intro:before{content:none}
-#vn-intro #vn-intro-video{position:absolute;inset:0 0 84px;width:100%;height:calc(100% - 84px);max-height:none;margin:0;object-fit:contain;object-position:center;filter:none;aspect-ratio:auto}
-#vn-intro .vn-intro-controls{position:absolute;bottom:12px;left:16px;right:16px;justify-content:center;margin:0;z-index:1}
+#vn-intro #vn-intro-video{position:absolute;inset:0 0 76px;width:100%;height:calc(100% - 76px);max-height:none;margin:0;object-fit:contain;object-position:center;filter:none;aspect-ratio:auto}
+#vn-intro .vn-intro-controls{position:absolute;bottom:max(12px,env(safe-area-inset-bottom));left:16px;right:16px;justify-content:center;align-items:center;margin:0;gap:12px;z-index:1}
+#vn-intro .vn-intro-controls button{font:inherit;font-size:16px;line-height:1.3;min-height:48px;padding:12px 20px;border-color:#d4af7c80;background:#0b2d45e8;color:var(--ivory)}
+#vn-intro .vn-intro-controls #vn-intro-contact{background:var(--teal);border-color:var(--gold)}
 #vn-intro .vn-intro-controls [hidden]{display:none}
-@media(max-width:760px){
- #vn-intro{padding:20px 20px max(20px,env(safe-area-inset-bottom));gap:16px}
- #vn-intro .vn-intro-logo{order:0;width:160px;margin:0}
- #vn-intro #vn-intro-video{position:relative;inset:auto;order:1;width:100%;height:auto;aspect-ratio:16/9;max-height:32svh;object-fit:contain;margin:0;flex-shrink:0}
- #vn-intro .vn-intro-copy{order:2;margin:0;padding:0}
- #vn-intro-heading{font-size:clamp(28px,7.5vw,38px);margin-bottom:12px}
- #vn-intro-context{margin-bottom:8px}
- #vn-intro-description{font-size:18px}
- #vn-intro .vn-intro-controls{position:static;order:3;display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:auto}
+@media(max-width:900px){
+ #vn-intro{padding:clamp(16px,4vw,28px);gap:clamp(14px,2vh,24px);overflow-y:auto;background:linear-gradient(#03151de8,#03151dbb),url(cinematic/asset-2.png) center/cover no-repeat}
+ #vn-intro .vn-intro-logo{order:0;width:clamp(140px,30vw,200px);margin:0;flex-shrink:0}
+ #vn-intro #vn-intro-video{position:relative;inset:auto;order:1;width:100%;height:auto;aspect-ratio:16/9;max-height:34vh;max-height:34svh;object-fit:contain;margin:0;flex-shrink:0}
+ #vn-intro .vn-intro-copy{order:2;margin:0;padding:0;max-width:680px}
+ #vn-intro-heading{font-size:clamp(28px,6vw,42px);line-height:1.12;margin-bottom:12px;letter-spacing:-.025em}
+ #vn-intro-context{font-size:clamp(14px,2.4vw,18px);line-height:1.45;margin-bottom:8px;color:var(--gold)}
+ #vn-intro-description{font-size:clamp(16px,2.8vw,20px);line-height:1.5}
+ #vn-intro .vn-intro-controls{position:static;order:3;display:grid;grid-template-columns:1fr 1fr;align-items:stretch;gap:10px;margin-top:auto;padding-top:8px;padding-bottom:env(safe-area-inset-bottom);width:100%}
+ #vn-intro .vn-intro-controls button{font-size:15px;padding:12px 10px;min-width:0;white-space:normal}
  #vn-intro .vn-intro-controls #vn-intro-contact{grid-column:1/-1}
 }
+/* A real closing invitation: one logo, one message, one set of working buttons. */
+#vn-intro.closing-card{padding:clamp(24px,5vh,64px) 24px 64px;gap:clamp(20px,4vh,40px);align-items:center;justify-content:center;text-align:center}
+#vn-intro.closing-card #vn-intro-video{position:absolute;inset:0;width:100%;height:100%;max-height:none;object-fit:cover;margin:0;z-index:-2}
+#vn-intro.closing-card:before{content:'';position:absolute;inset:0;background:linear-gradient(#03151d55,#03151d99);z-index:-1}
+#vn-intro.closing-card .vn-intro-logo{width:clamp(180px,24vw,300px);margin:0;order:0}
+#vn-intro.closing-card .vn-intro-copy{margin:0;padding:0;max-width:1000px;order:1}
+#vn-intro.closing-card #vn-intro-heading{font-size:clamp(32px,4.4vw,62px);line-height:1.1;margin:0 0 20px;letter-spacing:-.025em}
+#vn-intro.closing-card #vn-intro-context{font-size:clamp(17px,2vw,26px);line-height:1.45;margin:0 0 12px;color:var(--ivory)}
+#vn-intro.closing-card #vn-intro-description{font-size:clamp(24px,2.6vw,34px);line-height:1.3;color:var(--gold)}
+#vn-intro.closing-card .vn-intro-controls{position:static;display:flex;flex-wrap:wrap;width:auto;max-width:100%;margin:0;padding:0;order:2;gap:12px;justify-content:center}
+#vn-intro.closing-card #vn-intro-contact{min-width:0;font-size:18px}
+#vn-intro.closing-card #vn-intro-address{font-size:15px;bottom:20px;color:var(--ivory)}
+@media(max-width:600px){#vn-intro.closing-card{padding:24px 20px 60px;gap:24px}#vn-intro.closing-card .vn-intro-controls{display:grid;grid-template-columns:1fr 1fr;width:100%;max-width:420px}#vn-intro.closing-card #vn-intro-contact{grid-column:1/-1;width:100%}#vn-intro.closing-card #vn-intro-heading{font-size:clamp(30px,8vw,42px)}}
+@media(max-height:540px) and (min-width:901px){#vn-intro.closing-card{gap:14px;padding:20px 24px 48px}#vn-intro.closing-card .vn-intro-logo{width:160px}#vn-intro.closing-card #vn-intro-heading{font-size:34px;margin-bottom:10px}#vn-intro.closing-card #vn-intro-context{font-size:18px;margin-bottom:8px}}
