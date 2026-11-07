@@ -38,6 +38,6 @@ test('search metadata uses valid business data and each page URL', () => {
     assert.equal(json['@graph'][0].telephone,'+14372376895');
     assert.equal(json['@graph'][0].address.postalCode,'M4H 1L4');
     assert.ok(html.includes('property="og:image"'));
-    assert.equal(new Set(json['@graph'].map(x=>x['@id'])).size,3);
+    assert.equal(new Set(json['@graph'].map(x=>x['@id'])).size,key==='services'?7:3);
   }
 });

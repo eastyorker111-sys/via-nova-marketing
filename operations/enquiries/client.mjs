@@ -1,6 +1,19 @@
 // Shared native form client used by the public site.
 // Keep the request in memory only: customer text must not enter browser storage.
-export function createSubmission({ send, newId = () => crypto.randomUUID() }) {
+export function requestSignal(milliseconds) {
+  if (typeof AbortSignal.timeout === 'function') return AbortSignal.timeout(milliseconds);
+  const controller = new AbortController();
+  setTimeout(() => controller.abort(), milliseconds);
+  return controller.signal;
+}
+export function submissionId() {
+  if (typeof crypto.randomUUID === 'function') return crypto.randomUUID();
+  const bytes = crypto.getRandomValues(new Uint8Array(16));
+  bytes[6] = (bytes[6] & 15) | 64; bytes[8] = (bytes[8] & 63) | 128;
+  const hex = Array.from(bytes, b => b.toString(16).padStart(2, '0')).join('');
+  return `${hex.slice(0,8)}-${hex.slice(8,12)}-${hex.slice(12,16)}-${hex.slice(16,20)}-${hex.slice(20)}`;
+}
+export function createSubmission({ send, newId = submissionId }) {
   let pending, saved, busy = false;
   return async function submit(fields) {
     if (busy) return { state: 'busy', message: 'Sending. Please wait.' };
