@@ -271,3 +271,16 @@ button:focus,a:focus{outline:2px solid #d4af7c;outline-offset:3px}
  #vn-intro:not(.closing-card) #vn-intro-heading{font-size:36px;margin-bottom:12px}
  #vn-intro:not(.closing-card) #vn-intro-description{font-size:18px}
 }
+
+/* Finished Adobe film already contains its approved logo and typography. */
+#vn-intro.rendered-film{padding:0;background:#031018;overflow:hidden}
+#vn-intro.rendered-film:before{content:none}
+#vn-intro.rendered-film #vn-intro-video{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;object-position:center;filter:none;z-index:-2}
+#vn-intro.rendered-film .vn-intro-controls{position:absolute;inset:auto 20px 14px auto;display:flex;gap:8px;width:auto;margin:0;padding:0;justify-content:flex-end}
+#vn-intro.rendered-film .vn-intro-controls button{font-size:14px;padding:10px 14px;min-height:44px;background:#071b24e8}
+#vn-intro.rendered-film.closing-card .vn-intro-controls{position:static}
+#vn-intro.rendered-film.closing-card #vn-intro-contact,#vn-intro.rendered-film.closing-card #vn-intro-skip{position:absolute;left:50%;transform:translateX(-50%);border:0;background:transparent;color:transparent;box-shadow:none;padding:0;min-height:0}
+#vn-intro.rendered-film.closing-card #vn-intro-contact{top:calc(50% + var(--film-h)*.0875);width:calc(var(--film-w)*.3125);height:calc(var(--film-h)*.081)}
+#vn-intro.rendered-film.closing-card #vn-intro-skip{top:calc(50% + var(--film-h)*.19);width:calc(var(--film-w)*.32);height:calc(var(--film-h)*.07)}
+#vn-intro.rendered-film.closing-card .music-toggle{position:absolute;right:20px;bottom:14px}
+#vn-intro.rendered-film.closing-card #vn-intro-contact:focus-visible,#vn-intro.rendered-film.closing-card #vn-intro-skip:focus-visible{outline:3px solid var(--gold);outline-offset:4px}

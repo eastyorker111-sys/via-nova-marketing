@@ -255,7 +255,8 @@ const vnOverlay=$('#vn-intro'),vnVideo=$('#vn-intro-video');
 const vnPhone=matchMedia('(max-width:900px)');
 function vnPhoneElements(ending=false){
  vnOverlay.querySelectorAll('.vn-intro-copy,.vn-intro-logo').forEach(el=>el.remove());
- {
+ vnOverlay.classList.toggle('rendered-film',!vnPhone.matches);
+ if(vnPhone.matches){
   const logo=document.createElement('img');logo.className='vn-intro-logo';logo.src='assets/cinematic/asset-5.png';logo.alt='Via Nova Marketing';vnOverlay.prepend(logo);
   const copy=document.createElement('div');copy.className='vn-intro-copy';copy.innerHTML='<p id="vn-intro-context"></p><h2 id="vn-intro-heading"></h2><p id="vn-intro-description"></p>';vnOverlay.insertBefore(copy,$('.vn-intro-controls'));
  }
@@ -271,13 +272,15 @@ const vnCaptions=[
 let vnLeaving=false,vnFinishTimer,vnCaptionIndex=-1;
 function vnUpdateCaption(){
  const time=vnVideo.currentTime;let next=0;vnCaptions.forEach((c,i)=>{if(time>=c[0])next=i});
- const ending=time>=47;
+ const ending=time>=(vnPhone.matches?47:48);
  if(vnOverlay.classList.contains('closing-card')!==ending){vnOverlay.classList.toggle('closing-card',ending);vnPhoneElements(ending);vnCaptionIndex=-1;}
- $('#vn-intro-contact').hidden=!ending;$('#vn-intro-address').hidden=!ending;$('#vn-intro-pause').hidden=ending;
+ $('#vn-intro-contact').hidden=!ending;$('#vn-intro-address').hidden=!ending||!vnPhone.matches;$('#vn-intro-pause').hidden=ending;
  if(next===vnCaptionIndex&&!ending)return;vnCaptionIndex=next;
  {const c=ending?[47,'Helping local businesses. Guiding every step.','Your business could be next.','.CA matters.']:vnCaptions[next];txt('#vn-intro-context',c[1]);txt('#vn-intro-heading',c[2]);txt('#vn-intro-description',c[3]);}
 }
-function vnSelectFilm(){const time=vnVideo.currentTime||0,wasPlaying=!vnVideo.paused;vnPhoneElements(time>=47);vnCaptionIndex=-1;vnVideo.querySelector('source').src=vnPhone.matches?'assets/via-nova-intro-phone-57s.mp4':'assets/via-nova-intro-clean-desktop-57s.mp4';vnVideo.load();vnVideo.addEventListener('loadedmetadata',()=>{vnVideo.currentTime=Math.min(time,vnVideo.duration);vnUpdateCaption();if(wasPlaying)vnVideo.play().catch(()=>{});},{once:true});vnUpdateCaption();}
+function vnFilmSize(){const w=Math.min(innerWidth,innerHeight*16/9);vnOverlay.style.setProperty('--film-w',w+'px');vnOverlay.style.setProperty('--film-h',w*9/16+'px');}
+window.addEventListener('resize',vnFilmSize);vnFilmSize();
+function vnSelectFilm(){const time=vnVideo.currentTime||0,wasPlaying=!vnVideo.paused;vnPhoneElements(time>=47);vnCaptionIndex=-1;vnVideo.querySelector('source').src=vnPhone.matches?'assets/via-nova-intro-phone-57s.mp4':'assets/via-nova-adobe-intro-58s.mp4';vnVideo.load();vnVideo.addEventListener('loadedmetadata',()=>{vnVideo.currentTime=Math.min(time,vnVideo.duration);vnUpdateCaption();if(wasPlaying)vnVideo.play().catch(()=>{});},{once:true});vnUpdateCaption();}
 function vnFinish(){if(vnLeaving)return;vnLeaving=true;vnVideo.pause();showQuestions();$('.shell').inert=false;document.body.classList.remove('vn-intro-active');$('.shell').classList.add('vn-reveal');vnOverlay.classList.add('leaving');vnOverlay.inert=true;$('#contact').focus({preventScroll:true});vnFinishTimer=setTimeout(()=>{vnOverlay.hidden=true;$('.shell').classList.remove('vn-reveal')},reduced?0:400)}
 function vnStart(){clearTimeout(vnFinishTimer);$('#vn-intro-pause').hidden=false;vnOverlay.classList.remove('closing-card');vnPhoneElements();$('#vn-intro-address').hidden=true;$('#vn-intro-contact').hidden=true;if(reduced){showQuestions();return}vnLeaving=false;playing=false;vnOverlay.hidden=false;vnOverlay.inert=false;vnOverlay.classList.remove('leaving');$('.shell').inert=true;document.body.classList.add('vn-intro-active');vnVideo.currentTime=0;vnCaptionIndex=-1;vnUpdateCaption();vnVideo.play().catch(()=>txt('#vn-intro-pause','Play intro'));$('#vn-intro-skip').focus({preventScroll:true});}
 vnVideo.addEventListener('timeupdate',vnUpdateCaption);vnVideo.addEventListener('seeked',vnUpdateCaption);
