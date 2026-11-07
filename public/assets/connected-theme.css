@@ -73,3 +73,4 @@ body{font-size:17px;line-height:1.6}
  .needs-grid article{padding:22px}.visual-services{gap:22px}.service-route{min-height:140px}.button,.button.outline{font-size:15px}.cta{padding:34px 0}.footer-contact{gap:12px}
 }
 @media(max-width:370px){.container{width:calc(100% - 32px)}.about-copy,.about-principles{padding:20px}}
+.footer-top>p,.footer-tagline{font-family:var(--sans);font-size:18px;font-weight:400;line-height:1.5}
