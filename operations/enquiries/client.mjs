@@ -48,11 +48,11 @@ export function createReceiptReporter(notify) {
   };
 }
 
-export function bindForm(form, { send, isTest = true, kind = 'quick', getMessage } = {}) {
+export function bindForm(form, { send, submit: existingSubmission, isTest = true, kind = 'quick', getMessage } = {}) {
   const status = form.querySelector('[data-enquiry-status]');
   const button = form.querySelector('[type="submit"]');
   if (!status || !button || !send) throw new Error('A status area, submit button and verified transport are required');
-  const submit = createSubmission({ send });
+  const submit = existingSubmission || createSubmission({ send });
   const handler = async event => {
     if (event.defaultPrevented) return;
     event.preventDefault();

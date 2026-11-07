@@ -33,3 +33,13 @@ test('definite validation rejection permits corrected input without retaining an
  assert.equal((await submit({message:'bad'})).state,'invalid');
  assert.equal((await submit({message:'corrected'})).state,'saved');
 });
+import {bindForm} from '../operations/enquiries/client.mjs';
+test('reopening a guided contact form retains the saved receipt and does not send twice',async()=>{
+ const OriginalFormData=globalThis.FormData;
+ globalThis.FormData=class{get(k){return {name:'TEST',email:'test@example.invalid',message:'Same brief'}[k]||'';}};
+ let sends=0;const send=async p=>{sends++;return {ok:true,stored:true,id:p.id,isTest:true};};
+ const shared=createSubmission({send,newId:()=> 'shared-reference'});
+ const createForm=()=>{const status={textContent:'',focus(){}},button={disabled:false};let handler;return {querySelector:s=>s==='[data-enquiry-status]'?status:button,reportValidity:()=>true,addEventListener:(type,fn)=>handler=fn,removeEventListener(){},fire:()=>handler({preventDefault(){},defaultPrevented:false}),status};};
+ try{const first=createForm();bindForm(first,{send,submit:shared});await first.fire();const reopened=createForm();bindForm(reopened,{send,submit:shared});await reopened.fire();assert.equal(sends,1);assert.equal(reopened.status.textContent,first.status.textContent);}
+ finally{globalThis.FormData=OriginalFormData;}
+});
