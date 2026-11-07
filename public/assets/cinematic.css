@@ -215,3 +215,21 @@ button:focus,a:focus{outline:2px solid #d4af7c;outline-offset:3px}
 #vn-intro.closing-card #vn-intro-pause{display:none}
 #vn-intro.closing-card .vn-intro-controls{grid-template-columns:repeat(2,minmax(0,1fr))}
 #vn-intro.closing-card .music-toggle{grid-column:auto}
+
+/* Lettered desktop film: no redundant caption or logo elements. */
+#vn-intro{padding:0 0 84px;background:#03151d}
+#vn-intro:before{content:none}
+#vn-intro #vn-intro-video{position:absolute;inset:0 0 84px;width:100%;height:calc(100% - 84px);max-height:none;margin:0;object-fit:contain;object-position:center;filter:none;aspect-ratio:auto}
+#vn-intro .vn-intro-controls{position:absolute;bottom:12px;left:16px;right:16px;justify-content:center;margin:0;z-index:1}
+#vn-intro .vn-intro-controls [hidden]{display:none}
+@media(max-width:760px){
+ #vn-intro{padding:20px 20px max(20px,env(safe-area-inset-bottom));gap:16px}
+ #vn-intro .vn-intro-logo{order:0;width:160px;margin:0}
+ #vn-intro #vn-intro-video{position:relative;inset:auto;order:1;width:100%;height:auto;aspect-ratio:16/9;max-height:32svh;object-fit:contain;margin:0;flex-shrink:0}
+ #vn-intro .vn-intro-copy{order:2;margin:0;padding:0}
+ #vn-intro-heading{font-size:clamp(28px,7.5vw,38px);margin-bottom:12px}
+ #vn-intro-context{margin-bottom:8px}
+ #vn-intro-description{font-size:18px}
+ #vn-intro .vn-intro-controls{position:static;order:3;display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:auto}
+ #vn-intro .vn-intro-controls #vn-intro-contact{grid-column:1/-1}
+}

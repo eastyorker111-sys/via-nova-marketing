@@ -252,25 +252,35 @@ function openHashSection(){const k=sectionFromHash[location.hash.slice(1)];if(k)
 window.addEventListener('hashchange',openHashSection);openHashSection();
 // Responsive captions stay readable independently of the full-window footage.
 const vnOverlay=$('#vn-intro'),vnVideo=$('#vn-intro-video');
+const vnPhone=matchMedia('(max-width:760px)');
+function vnPhoneElements(){
+ vnOverlay.querySelectorAll('.vn-intro-copy,.vn-intro-logo').forEach(el=>el.remove());
+ if(vnPhone.matches){
+  const logo=document.createElement('img');logo.className='vn-intro-logo';logo.src='assets/cinematic/asset-5.png';logo.alt='Via Nova Marketing';vnOverlay.prepend(logo);
+  const copy=document.createElement('div');copy.className='vn-intro-copy';copy.innerHTML='<p id="vn-intro-context"></p><h2 id="vn-intro-heading"></h2><p id="vn-intro-description"></p>';vnOverlay.insertBefore(copy,$('.vn-intro-controls'));
+ }
+}
 const vnCaptions=[
  [0,'Branding, websites & marketing','Good work deserves to be seen.','Help customers understand what you offer and take the next step.'],
- [3,'Start with your business','What is getting in the way?','A new idea, an unclear offer or a website that needs attention.'],
- [6,'Build the pieces you need','One service. Or connected support.','Bring your branding, website and content together.'],
- [9.7,'Heart in Crystal · Portfolio example','From an idea to an online presence.','Business name, identity, website and product visuals.'],
- [12.8,'Heart in Crystal · Portfolio example','Make the next step clear.','Connect the offer, useful information and the customer journey.'],
- [16.9,'Work directly with Nabil Khan','What could we build for you?','Choose your situation. We agree the work and price before starting.']
+ [8,'Start with your business','First, we understand your business.','Your offer. Your customers. Your next step.'],
+ [16.5,'Build the pieces you need','Build what connects it.','Bring your branding, website and content together.'],
+ [23.5,'Heart in Crystal · Portfolio example','From an idea to an online presence.','Business name, identity, website and product visuals.'],
+ [31,'Heart in Crystal · Portfolio example','Make the next step clear.','Connect the offer, useful information and the customer journey.'],
+ [38.5,'Work directly with Nabil Khan','What could we build for you?','Choose your situation. We agree the work and price before starting.']
 ];
 let vnLeaving=false,vnFinishTimer,vnCaptionIndex=-1;
-function vnUpdateCaption(){const time=vnVideo.currentTime;let next=0;vnCaptions.forEach((c,i)=>{if(time>=c[0])next=i});if(next===vnCaptionIndex)return;vnCaptionIndex=next;const c=vnCaptions[next];txt('#vn-intro-context',c[1]);txt('#vn-intro-heading',c[2]);txt('#vn-intro-description',c[3]);vnOverlay.dataset.scene=String(next);}
+function vnUpdateCaption(){const time=vnVideo.currentTime;let next=0;vnCaptions.forEach((c,i)=>{if(time>=c[0])next=i});const ending=time>=47;$('#vn-intro-contact').hidden=!ending;if(next===vnCaptionIndex&&!ending)return;vnCaptionIndex=next;if(vnPhone.matches){const c=ending?[47,'Helping local businesses. Guiding every step.','Your business could be next.','.CA matters.']:vnCaptions[next];txt('#vn-intro-context',c[1]);txt('#vn-intro-heading',c[2]);txt('#vn-intro-description',c[3]);}}
+function vnSelectFilm(){const time=vnVideo.currentTime||0,wasPlaying=!vnVideo.paused;vnPhoneElements();vnCaptionIndex=-1;vnVideo.querySelector('source').src=vnPhone.matches?'assets/via-nova-intro-phone-57s.mp4':'assets/via-nova-intro-compatible.mp4';vnVideo.load();vnVideo.addEventListener('loadedmetadata',()=>{vnVideo.currentTime=Math.min(time,vnVideo.duration);vnUpdateCaption();if(wasPlaying)vnVideo.play().catch(()=>{});},{once:true});vnUpdateCaption();}
 function vnFinish(){if(vnLeaving)return;vnLeaving=true;vnVideo.pause();showQuestions();$('.shell').inert=false;document.body.classList.remove('vn-intro-active');$('.shell').classList.add('vn-reveal');vnOverlay.classList.add('leaving');vnOverlay.inert=true;$('#contact').focus({preventScroll:true});vnFinishTimer=setTimeout(()=>{vnOverlay.hidden=true;$('.shell').classList.remove('vn-reveal')},reduced?0:400)}
-function vnStart(){clearTimeout(vnFinishTimer);vnOverlay.classList.remove('closing-card');$('#vn-intro-address').hidden=true;$('#vn-intro-contact').hidden=true;if(reduced){showQuestions();return}vnLeaving=false;playing=false;vnOverlay.hidden=false;vnOverlay.inert=false;vnOverlay.classList.remove('leaving');$('.shell').inert=true;document.body.classList.add('vn-intro-active');vnVideo.currentTime=0;vnCaptionIndex=-1;vnUpdateCaption();vnVideo.play().catch(()=>txt('#vn-intro-pause','Play intro'));$('#vn-intro-skip').focus({preventScroll:true});}
+function vnStart(){clearTimeout(vnFinishTimer);$('#vn-intro-pause').hidden=false;vnOverlay.classList.remove('closing-card');$('#vn-intro-address').hidden=true;$('#vn-intro-contact').hidden=true;if(reduced){showQuestions();return}vnLeaving=false;playing=false;vnOverlay.hidden=false;vnOverlay.inert=false;vnOverlay.classList.remove('leaving');$('.shell').inert=true;document.body.classList.add('vn-intro-active');vnVideo.currentTime=0;vnCaptionIndex=-1;vnUpdateCaption();vnVideo.play().catch(()=>txt('#vn-intro-pause','Play intro'));$('#vn-intro-skip').focus({preventScroll:true});}
 vnVideo.addEventListener('timeupdate',vnUpdateCaption);vnVideo.addEventListener('seeked',vnUpdateCaption);
-function vnClosingCard(){vnOverlay.classList.add('closing-card');$('#vn-intro-contact').hidden=false;$('#vn-intro-address').hidden=false;txt('#vn-intro-context','Helping local businesses. Guiding every step.');txt('#vn-intro-heading','Your business could be next.');txt('#vn-intro-description','.CA matters.');txt('#vn-intro-pause','Replay intro');vnOverlay.dataset.scene='5';}
+function vnClosingCard(){vnUpdateCaption();$('#vn-intro-contact').hidden=false;$('#vn-intro-pause').hidden=true;}
 vnVideo.addEventListener('ended',vnClosingCard);vnVideo.addEventListener('error',vnFinish);vnVideo.querySelector('source').addEventListener('error',vnFinish);
 vnVideo.addEventListener('play',()=>txt('#vn-intro-pause','Pause intro'));vnVideo.addEventListener('pause',()=>txt('#vn-intro-pause','Play intro'));
 $('#vn-intro-contact').onclick=()=>{vnFinish();mountContact();if(!dialog.open)dialog.showModal()};
 $('#vn-intro-skip').onclick=vnFinish;$('#vn-intro-pause').onclick=()=>vnVideo.ended?vnStart():vnVideo.paused?vnVideo.play().catch(vnFinish):vnVideo.pause();
 $('#replay').onclick=vnStart;document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!vnOverlay.hidden)vnFinish()});document.addEventListener('visibilitychange',()=>{if(document.hidden)vnVideo.pause()});
+vnSelectFilm();vnPhone.addEventListener('change',vnSelectFilm);
 if(!location.hash&&!reduced)vnStart();else if(!location.hash)showQuestions();
 
 matchMedia('(prefers-reduced-motion: reduce)').addEventListener('change',e=>{if(e.matches&&!vnOverlay.hidden)vnFinish()});
