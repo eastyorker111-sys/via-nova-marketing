@@ -255,6 +255,6 @@ button:focus,a:focus{outline:2px solid #d4af7c;outline-offset:3px}
 /* Desktop intro fills the browser viewport; phone/tablet captions stay separate. */
 @media(min-width:901px){
  #vn-intro:not(.closing-card){padding:0;background:#03151d}
- #vn-intro:not(.closing-card) #vn-intro-video{inset:0;width:100%;height:100%;object-fit:cover;object-position:center}
+ #vn-intro:not(.closing-card) #vn-intro-video{inset:0;width:100%;height:100%;object-fit:cover;object-position:center top}
  #vn-intro:not(.closing-card) .vn-intro-controls{bottom:max(16px,env(safe-area-inset-bottom))}
 }
