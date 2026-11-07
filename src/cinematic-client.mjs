@@ -276,7 +276,7 @@ function vnUpdateCaption(){
  if(vnOverlay.classList.contains('closing-card')!==ending){vnOverlay.classList.toggle('closing-card',ending);vnPhoneElements(ending);vnCaptionIndex=-1;}
  $('#vn-intro-contact').hidden=!ending;$('#vn-intro-address').hidden=!ending||!vnPhone.matches;$('#vn-intro-pause').hidden=ending;
  if(next===vnCaptionIndex&&!ending)return;vnCaptionIndex=next;
- {const c=ending?[47,'Helping local businesses. Guiding every step.','Your business could be next.','.CA matters.']:vnCaptions[next];txt('#vn-intro-context',c[1]);txt('#vn-intro-heading',c[2]);txt('#vn-intro-description',c[3]);}
+ if(vnPhone.matches){const c=ending?[47,'Helping local businesses. Guiding every step.','Your business could be next.','.CA matters.']:vnCaptions[next];txt('#vn-intro-context',c[1]);txt('#vn-intro-heading',c[2]);txt('#vn-intro-description',c[3]);}
 }
 function vnFilmSize(){const w=Math.min(innerWidth,innerHeight*16/9);vnOverlay.style.setProperty('--film-w',w+'px');vnOverlay.style.setProperty('--film-h',w*9/16+'px');}
 window.addEventListener('resize',vnFilmSize);vnFilmSize();
