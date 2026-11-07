@@ -252,9 +252,22 @@ button:focus,a:focus{outline:2px solid #d4af7c;outline-offset:3px}
 @media(max-width:600px){#vn-intro.closing-card{padding:24px 20px 60px;gap:24px}#vn-intro.closing-card .vn-intro-controls{display:grid;grid-template-columns:1fr 1fr;width:100%;max-width:420px}#vn-intro.closing-card #vn-intro-contact{grid-column:1/-1;width:100%}#vn-intro.closing-card #vn-intro-heading{font-size:clamp(30px,8vw,42px)}}
 @media(max-height:540px) and (min-width:901px){#vn-intro.closing-card{gap:14px;padding:20px 24px 48px}#vn-intro.closing-card .vn-intro-logo{width:160px}#vn-intro.closing-card #vn-intro-heading{font-size:34px;margin-bottom:10px}#vn-intro.closing-card #vn-intro-context{font-size:18px;margin-bottom:8px}}
 
-/* Desktop intro fills the browser viewport; phone/tablet captions stay separate. */
+
+/* Full-bleed clean footage; typography remains inside the viewport. */
 @media(min-width:901px){
- #vn-intro:not(.closing-card){padding:0;background:#03151d}
- #vn-intro:not(.closing-card) #vn-intro-video{inset:0;width:100%;height:100%;object-fit:cover;object-position:center top}
- #vn-intro:not(.closing-card) .vn-intro-controls{bottom:max(16px,env(safe-area-inset-bottom))}
+ #vn-intro:not(.closing-card){padding:clamp(24px,4vh,48px) clamp(32px,4vw,72px);gap:24px;background:#03151d;overflow-y:auto}
+ #vn-intro:not(.closing-card) #vn-intro-video{position:fixed;inset:0;width:100%;height:100%;object-fit:cover;object-position:center}
+ #vn-intro:not(.closing-card):before{content:'';position:fixed;inset:0;background:linear-gradient(90deg,#03151de8 0%,#03151db3 30%,#03151d25 62%,transparent 100%);z-index:-1}
+ #vn-intro:not(.closing-card) .vn-intro-logo{width:clamp(180px,19vw,270px);margin:0;flex-shrink:0}
+ #vn-intro:not(.closing-card) .vn-intro-copy{margin:auto 0;padding:0;max-width:min(46vw,640px);flex-shrink:0;text-shadow:0 2px 12px #03151d88}
+ #vn-intro:not(.closing-card) #vn-intro-heading{font-size:clamp(34px,4vw,60px);line-height:1.08;margin:0 0 20px;max-width:18ch;letter-spacing:-.025em}
+ #vn-intro:not(.closing-card) #vn-intro-context{font-size:clamp(14px,1.2vw,18px);color:var(--gold);line-height:1.4;margin:0 0 12px}
+ #vn-intro:not(.closing-card) #vn-intro-description{font-size:clamp(18px,1.7vw,24px);line-height:1.45;max-width:36ch}
+ #vn-intro:not(.closing-card) .vn-intro-controls{position:static;justify-content:flex-start;flex-shrink:0;gap:12px;margin:0;padding:0}
+}
+@media(min-width:901px) and (max-height:600px){
+ #vn-intro:not(.closing-card){padding:20px 36px;gap:16px}
+ #vn-intro:not(.closing-card) .vn-intro-logo{width:170px}
+ #vn-intro:not(.closing-card) #vn-intro-heading{font-size:36px;margin-bottom:12px}
+ #vn-intro:not(.closing-card) #vn-intro-description{font-size:18px}
 }
