@@ -275,7 +275,7 @@ button:focus,a:focus{outline:2px solid #d4af7c;outline-offset:3px}
 /* Finished Adobe film already contains its approved logo and typography. */
 #vn-intro.rendered-film{padding:0;background:#031018;overflow:hidden}
 #vn-intro.rendered-film:before{content:none}
-#vn-intro.rendered-film #vn-intro-video{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;object-position:center;filter:none;z-index:-2}
+#vn-intro.rendered-film #vn-intro-video{position:absolute;inset:0;width:100%;height:100%;object-fit:fill;object-position:center;filter:none;z-index:-2}
 #vn-intro.rendered-film .vn-intro-controls{position:absolute;inset:auto 20px 14px auto;display:flex;gap:8px;width:auto;margin:0;padding:0;justify-content:flex-end}
 #vn-intro.rendered-film .vn-intro-controls button{font-size:14px;padding:10px 14px;min-height:44px;background:#071b24e8}
 #vn-intro.rendered-film.closing-card .vn-intro-controls{position:static}
