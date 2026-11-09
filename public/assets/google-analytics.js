@@ -64,7 +64,7 @@
         }
       }
     }
-    settings.focus();
+    settings.focus({preventScroll:true});
   }
   panel.querySelector('[data-analytics="accept"]').addEventListener('click', () => save('granted'));
   panel.querySelector('[data-analytics="decline"]').addEventListener('click', () => save('denied'));
