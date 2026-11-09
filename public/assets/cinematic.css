@@ -215,3 +215,5 @@ button:focus,a:focus{outline:2px solid #d4af7c;outline-offset:3px}
 #vn-intro.closing-card #vn-intro-pause{display:none}
 #vn-intro.closing-card .vn-intro-controls{grid-template-columns:repeat(2,minmax(0,1fr))}
 #vn-intro.closing-card .music-toggle{grid-column:auto}
+
+@media(max-width:600px){header nav>a.link{display:none}}

@@ -110,6 +110,7 @@ function pauseForPointer(){
 document.addEventListener('pointermove',pauseForPointer,{passive:true});
 document.addEventListener('pointerdown',pauseForPointer,{passive:true});
 $('#home-logo').onclick=e=>{
+ if(e.currentTarget.getAttribute('href')==='index.html')return;
  e.preventDefault();if(dialog.open)dialog.close();
  showQuestions();filterWorries('all');
  $('.experience').scrollTop=0;pauseForPointer();
@@ -271,6 +272,15 @@ vnVideo.addEventListener('play',()=>txt('#vn-intro-pause','Pause intro'));vnVide
 $('#vn-intro-contact').onclick=()=>{vnFinish();mountContact();if(!dialog.open)dialog.showModal()};
 $('#vn-intro-skip').onclick=vnFinish;$('#vn-intro-pause').onclick=()=>vnVideo.ended?vnStart():vnVideo.paused?vnVideo.play().catch(vnFinish):vnVideo.pause();
 $('#replay').onclick=vnStart;document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!vnOverlay.hidden)vnFinish()});document.addEventListener('visibilitychange',()=>{if(document.hidden)vnVideo.pause()});
-if(!location.hash&&!reduced)vnStart();else if(!location.hash)showQuestions();
+if(!location.hash&&!new URLSearchParams(location.search).has('path'))showQuestions();
 
 matchMedia('(prefers-reduced-motion: reduce)').addEventListener('change',e=>{if(e.matches&&!vnOverlay.hidden)vnFinish()});
+
+// The new homepage links directly into the existing guided experience.
+function openPremiumPath(){
+ const path=new URLSearchParams(location.search).get('path')||location.hash.slice(1);
+ if(path==='launch')select(0,true);
+ else if(path==='improve'){showQuestions();filterWorries('marketing');}
+ else if(path==='support')showDeck('hire');
+}
+window.addEventListener('hashchange',openPremiumPath);openPremiumPath();
