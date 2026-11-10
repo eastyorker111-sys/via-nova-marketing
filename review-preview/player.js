@@ -1,0 +1,11 @@
+const video=document.querySelector('video');
+const tools=document.querySelector('.player-tools');
+const chapters=[...document.querySelectorAll('[data-time]')];
+const error=document.querySelector('.film-error');
+tools.hidden=false;
+for(const button of chapters)button.addEventListener('click',()=>{video.currentTime=Number(button.dataset.time);video.scrollIntoView({block:'center',behavior:'instant'});video.play().catch(()=>{video.focus();});});
+video.addEventListener('timeupdate',()=>{for(const button of chapters)button.setAttribute('aria-pressed',String(Number(button.dataset.time)=== (video.currentTime>=19.5?19.5:0)));});
+video.addEventListener('error',()=>{error.hidden=false;});
+const fullscreen=document.querySelector('#fullscreen');
+if(!video.requestFullscreen&&!video.webkitEnterFullscreen)fullscreen.hidden=true;
+fullscreen.addEventListener('click',async()=>{try{if(video.requestFullscreen)await video.requestFullscreen();else video.webkitEnterFullscreen();}catch{error.hidden=false;}});
