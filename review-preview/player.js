@@ -9,3 +9,4 @@ video.addEventListener('error',()=>{error.hidden=false;});
 const fullscreen=document.querySelector('#fullscreen');
 if(!video.requestFullscreen&&!video.webkitEnterFullscreen)fullscreen.hidden=true;
 fullscreen.addEventListener('click',async()=>{try{if(video.requestFullscreen)await video.requestFullscreen();else video.webkitEnterFullscreen();}catch{error.hidden=false;}});
+for(const link of document.querySelectorAll('.mobile-menu a'))link.addEventListener('click',()=>{document.querySelector('.mobile-menu').open=false;});
